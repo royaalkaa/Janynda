@@ -1,0 +1,171 @@
+{% extends base_template %}
+
+{% block title %}План дня · Janynda{% endblock %}
+{% block topbar_title %}План дня{% endblock %}
+{% block topbar_subtitle %}Задачи, лекарства и визиты, которые важно не забыть{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">План для {{ subject.get_display_name }}</h1>
+        <div class="text-muted">Дата: {{ target_date|date:"d.m.Y" }}</div>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        {% if subject_choices %}
+            {% for candidate in subject_choices %}
+                <a href="{% url 'care-plan-subject' candidate.id %}?date={{ target_date|date:'Y-m-d' }}" class="btn {% if candidate == subject %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                    {{ candidate.get_display_name }}
+                </a>
+            {% endfor %}
+        {% endif %}
+        <a href="{% url 'task_history' %}{% if subject != request.user %}?subject_id={{ subject.id }}{% endif %}" class="btn btn-outline-secondary">История</a>
+        <a href="{% url 'ai-assistant' %}{% if subject != request.user %}?subject_id={{ subject.id }}{% endif %}" class="btn btn-outline-secondary">Голосовой помощник</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="j-card">
+            <div class="j-card-body">
+                <div class="small text-muted mb-1">Всего задач</div>
+                <div class="display-6 fw-semibold">{{ summary.total }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="j-card">
+            <div class="j-card-body">
+                <div class="small text-muted mb-1">Выполнено</div>
+                <div class="display-6 fw-semibold text-success">{{ summary.completed }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="j-card">
+            <div class="j-card-body">
+                <div class="small text-muted mb-1">Осталось</div>
+                <div class="display-6 fw-semibold text-warning">{{ summary.pending }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-4">
+        <div class="j-card">
+            <div class="j-card-header">Добавить задачу</div>
+            <div class="j-card-body">
+                <form method="post" class="d-grid gap-3">
+                    {% csrf_token %}
+                    {% for field in plan_form %}
+                        <div>
+                            {% if field.field.widget.input_type == "checkbox" %}
+                                <div class="form-check">
+                                    {{ field }}
+                                    <label class="form-check-label">{{ field.label }}</label>
+                                </div>
+                            {% else %}
+                                <label class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                            {% endif %}
+                            {% if field.help_text %}
+                                <div class="small text-muted mt-1">{{ field.help_text }}</div>
+                            {% endif %}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">{{ field.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button class="btn btn-primary">Сохранить в план</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-8">
+        <div class="j-card mb-4">
+            <div class="j-card-header">Сегодняшний список</div>
+            <div class="j-card-body">
+                {% if day_items %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for item in day_items %}
+                            <div class="border rounded-3 p-3 {% if item.is_completed %}bg-light{% endif %}">
+                                <div class="d-flex justify-content-between gap-3">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                            <span class="badge text-bg-light border">{{ item.get_category_display }}</span>
+                                            {% if item.priority == "high" %}
+                                                <span class="badge text-bg-danger">Высокий приоритет</span>
+                                            {% endif %}
+                                            {% if item.recurrence_type != "once" %}
+                                                <span class="badge text-bg-info">{{ item.recurrence_label }}</span>
+                                            {% endif %}
+                                            {% if item.via_voice %}
+                                                <span class="badge text-bg-secondary">Голосом</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="fw-semibold {% if item.is_completed %}text-decoration-line-through text-muted{% endif %}">{{ item.title }}</div>
+                                        <div class="small text-muted">{{ item.time_label }}{% if item.duration_minutes %} · {{ item.duration_minutes }} мин{% endif %}</div>
+                                        {% if item.description %}
+                                            <div class="small mt-2">{{ item.description }}</div>
+                                        {% endif %}
+                                        {% if item.details %}
+                                            <div class="small mt-2 text-muted">{{ item.details|join:" · " }}</div>
+                                        {% endif %}
+                                        {% with reminder=item.reminders.first %}
+                                            {% if reminder %}
+                                                <div class="small mt-2 text-muted">Напоминание за {{ reminder.remind_before_minutes }} мин</div>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                    <div class="d-flex flex-column gap-2 align-items-end">
+                                        <form method="post" action="{% url 'care-plan-toggle' item.id %}">
+                                            {% csrf_token %}
+                                            <button class="btn {% if item.is_completed %}btn-outline-secondary{% else %}btn-outline-success{% endif %} btn-sm">
+                                                {% if item.is_completed %}Вернуть{% else %}Выполнено{% endif %}
+                                            </button>
+                                        </form>
+                                        <a href="{% url 'task_edit' item.id %}" class="btn btn-outline-primary btn-sm">Редактировать</a>
+                                        <form method="post" action="{% url 'task_delete' item.id %}" onsubmit="return confirm('Удалить задачу?');">
+                                            {% csrf_token %}
+                                            <button class="btn btn-outline-danger btn-sm">Удалить</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {% include "components/empty_state.html" with icon="calendar-check" title="На эту дату задач нет" text="Добавьте лекарства, визиты к врачу, прогулки или бытовые дела." %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="j-card">
+            <div class="j-card-header">Окно на 5 дней</div>
+            <div class="j-card-body">
+                <div class="row g-3">
+                    {% for day, items in plan_map.items %}
+                        <div class="col-md-6 col-xl-4">
+                            <div class="border rounded-3 p-3 h-100 {% if day == target_date %}border-primary{% endif %}">
+                                <div class="fw-semibold mb-2">{{ day|date:"D, d.m" }}</div>
+                                {% if items %}
+                                    <div class="d-flex flex-column gap-2">
+                                        {% for item in items %}
+                                            <div class="small {% if item.is_completed %}text-muted text-decoration-line-through{% endif %}">
+                                                {{ item.time_label }} · {{ item.title }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="small text-muted">Пусто</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

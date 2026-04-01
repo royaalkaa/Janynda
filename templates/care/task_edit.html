@@ -1,0 +1,47 @@
+{% extends base_template %}
+
+{% block title %}Редактирование задачи · Janynda{% endblock %}
+{% block topbar_title %}Редактирование задачи{% endblock %}
+{% block topbar_subtitle %}Обновите расписание, напоминание и дополнительные детали{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">{{ task.title }}</h1>
+        <div class="text-muted">Для {{ subject.get_display_name }}</div>
+    </div>
+    <a href="{% if subject != request.user %}{% url 'care-plan-subject' subject.id %}{% else %}{% url 'care-plan' %}{% endif %}?date={{ task.scheduled_date|date:'Y-m-d' }}" class="btn btn-outline-secondary">Назад к плану</a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-xl-8">
+        <div class="j-card">
+            <div class="j-card-body">
+                <form method="post" class="d-grid gap-3">
+                    {% csrf_token %}
+                    {% for field in plan_form %}
+                        <div>
+                            {% if field.field.widget.input_type == "checkbox" %}
+                                <div class="form-check">
+                                    {{ field }}
+                                    <label class="form-check-label">{{ field.label }}</label>
+                                </div>
+                            {% else %}
+                                <label class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                            {% endif %}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">{{ field.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary">Сохранить изменения</button>
+                        <a href="{% if subject != request.user %}{% url 'care-plan-subject' subject.id %}{% else %}{% url 'care-plan' %}{% endif %}?date={{ task.scheduled_date|date:'Y-m-d' }}" class="btn btn-outline-secondary">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends base_template %}
+
+{% block title %}История задач · Janynda{% endblock %}
+{% block topbar_title %}История задач{% endblock %}
+{% block topbar_subtitle %}Какие задачи были завершены и когда{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">История выполнения для {{ subject.get_display_name }}</h1>
+        <div class="text-muted">Фильтрация по дате завершения</div>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        {% if subject_choices %}
+            {% for candidate in subject_choices %}
+                <a href="{% url 'task_history' %}?subject_id={{ candidate.id }}" class="btn {% if candidate == subject %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                    {{ candidate.get_display_name }}
+                </a>
+            {% endfor %}
+        {% endif %}
+        <a href="{% if subject != request.user %}{% url 'care-plan-subject' subject.id %}{% else %}{% url 'care-plan' %}{% endif %}" class="btn btn-outline-secondary">План дня</a>
+    </div>
+</div>
+
+<div class="j-card mb-4">
+    <div class="j-card-body">
+        <form method="get" class="row g-3 align-items-end">
+            {% if subject != request.user %}
+                <input type="hidden" name="subject_id" value="{{ subject.id }}">
+            {% endif %}
+            <div class="col-md-4">
+                <label class="form-label">С даты</label>
+                <input type="date" name="date_from" class="form-control" value="{{ date_from|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">По дату</label>
+                <input type="date" name="date_to" class="form-control" value="{{ date_to|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-primary">Показать</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="j-card">
+    <div class="j-card-body">
+        {% if history_items %}
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Задача</th>
+                            <th>Категория</th>
+                            <th>План</th>
+                            <th>Завершена</th>
+                            <th>Кто отметил</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in history_items %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">{{ item.title }}</div>
+                                    {% if item.details %}
+                                        <div class="small text-muted">{{ item.details|join:" · " }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.get_category_display }}</td>
+                                <td>{{ item.scheduled_date|date:"d.m.Y" }}{% if item.scheduled_time %} · {{ item.scheduled_time|time:"H:i" }}{% endif %}</td>
+                                <td>{{ item.completed_at|date:"d.m.Y H:i" }}</td>
+                                <td>{% if item.completed_by %}{{ item.completed_by.get_display_name }}{% else %}—{% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            {% include "components/empty_state.html" with icon="clock-history" title="История пока пуста" text="Здесь появятся завершённые задачи после первых отметок." %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
