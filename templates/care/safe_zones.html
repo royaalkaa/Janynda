@@ -1,0 +1,139 @@
+{% extends base_template %}
+
+{% block title %}Безопасные зоны · Janynda{% endblock %}
+{% block topbar_title %}Безопасные зоны{% endblock %}
+{% block topbar_subtitle %}Дом, поликлиника и другие места, за которыми нужно следить{% endblock %}
+
+{% block head %}
+<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU"></script>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Безопасные зоны для {{ subject.get_display_name }}</h1>
+        <div class="text-muted">Настройте дом, поликлинику и другие важные точки.</div>
+    </div>
+    <a href="{% url 'care-location' %}{% if subject_query %}?{{ subject_query }}{% endif %}" class="btn btn-outline-secondary">Назад к геолокации</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-4">
+        <div class="j-card">
+            <div class="j-card-header">{% if edit_zone %}Редактировать зону{% else %}Новая зона{% endif %}</div>
+            <div class="j-card-body">
+                <form method="post" class="d-grid gap-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                    {% if edit_zone %}
+                        <input type="hidden" name="zone_id" value="{{ edit_zone.id }}">
+                    {% endif %}
+                    {% for field in zone_form %}
+                        <div>
+                            {% if field.field.widget.input_type == "checkbox" %}
+                                <div class="form-check">
+                                    {{ field }}
+                                    <label class="form-check-label">{{ field.label }}</label>
+                                </div>
+                            {% else %}
+                                <label class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                            {% endif %}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">{{ field.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button class="btn btn-primary">{% if edit_zone %}Сохранить{% else %}Добавить зону{% endif %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-8">
+        <div class="j-card mb-4">
+            <div class="j-card-header">Карта зон</div>
+            <div class="j-card-body">
+                <div id="safe-zones-map" style="height: 360px;" class="rounded-3 border"></div>
+            </div>
+        </div>
+
+        <div class="j-card">
+            <div class="j-card-header">Список зон</div>
+            <div class="j-card-body">
+                {% if zones %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for zone in zones %}
+                            <div class="border rounded-3 p-3">
+                                <div class="d-flex justify-content-between gap-3">
+                                    <div>
+                                        <div class="fw-semibold">{{ zone.name }}</div>
+                                        <div class="small text-muted">{{ zone.latitude }}, {{ zone.longitude }} · {{ zone.radius_meters }} м</div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        {% if zone.is_home %}
+                                            <span class="badge text-bg-success">Дом</span>
+                                        {% endif %}
+                                        <a href="?{% if subject_query %}{{ subject_query }}&{% endif %}zone_id={{ zone.id }}" class="btn btn-outline-primary btn-sm">Редактировать</a>
+                                        <form method="post" onsubmit="return confirm('Удалить зону?');">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                                            <input type="hidden" name="zone_id" value="{{ zone.id }}">
+                                            <button class="btn btn-outline-danger btn-sm">Удалить</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {% include "components/empty_state.html" with icon="geo" title="Зоны ещё не добавлены" text="Сохраните дом и другие важные точки, чтобы отслеживать выходы и возвращения." %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ safe_zones_map_data|json_script:"safe-zones-only-data" }}
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+    const dataNode = document.getElementById("safe-zones-only-data");
+    const mapContainer = document.getElementById("safe-zones-map");
+    if (!dataNode || !mapContainer || !window.ymaps) {
+        return;
+    }
+    const zones = JSON.parse(dataNode.textContent || "[]");
+
+    ymaps.ready(() => {
+        const center = zones.length ? [zones[0].latitude, zones[0].longitude] : [43.238949, 76.889709];
+        const map = new ymaps.Map("safe-zones-map", {
+            center,
+            zoom: 12,
+            controls: ["zoomControl", "fullscreenControl"],
+        });
+
+        zones.forEach((zone) => {
+            map.geoObjects.add(new ymaps.Circle(
+                [[zone.latitude, zone.longitude], zone.radius_meters],
+                {
+                    balloonContent: `${zone.name} · ${zone.radius_meters} м`,
+                },
+                {
+                    fillColor: zone.is_home ? "rgba(35,134,54,0.14)" : "rgba(255,170,0,0.10)",
+                    strokeColor: zone.is_home ? "#238636" : "#d97706",
+                    strokeWidth: 2,
+                }
+            ));
+        });
+
+        if (map.geoObjects.getLength()) {
+            map.setBounds(map.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 30 });
+        }
+    });
+})();
+</script>
+{% endblock %}

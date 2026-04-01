@@ -1,0 +1,276 @@
+{% extends base_template %}
+
+{% block title %}Геолокация · Janynda{% endblock %}
+{% block topbar_title %}Геолокация{% endblock %}
+{% block topbar_subtitle %}Последняя известная точка, безопасные зоны и контроль выхода из дома{% endblock %}
+
+{% block head %}
+<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU"></script>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Геолокация {{ subject.get_display_name }}</h1>
+        <div class="text-muted">
+            {% if location_settings.tracking_enabled %}
+                <span class="badge text-bg-success">Отслеживание активно</span>
+            {% else %}
+                <span class="badge text-bg-secondary">Отслеживание выключено</span>
+            {% endif %}
+            {% if location_settings.tracking_consent_given_at %}
+                <span class="ms-2">Согласие получено {{ location_settings.tracking_consent_given_at|date:"d.m.Y H:i" }}</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        {% if subject_choices %}
+            {% for candidate in subject_choices %}
+                <a href="{% url 'care-location-subject' candidate.id %}" class="btn {% if candidate == subject %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                    {{ candidate.get_display_name }}
+                </a>
+            {% endfor %}
+        {% endif %}
+        <a href="{% url 'safe_zones' %}{% if subject_query %}?{{ subject_query }}{% endif %}" class="btn btn-outline-secondary">Безопасные зоны</a>
+        <form method="post" action="{% url 'emergency_sos' %}" id="sos-form">
+            {% csrf_token %}
+            <input type="hidden" name="subject_id" value="{{ subject.id }}">
+            <input type="hidden" name="latitude" id="sos-latitude">
+            <input type="hidden" name="longitude" id="sos-longitude">
+            <button class="btn btn-danger" type="submit" onclick="return confirm('Отправить SOS сигнал?');">
+                <i class="bi bi-exclamation-octagon-fill"></i> SOS
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-5">
+        <div class="j-card mb-4">
+            <div class="j-card-header">Настройки доступа</div>
+            <div class="j-card-body">
+                <form method="post" class="d-grid gap-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="settings">
+                    {% for field in settings_form %}
+                        <div>
+                            {% if field.field.widget.input_type == "checkbox" %}
+                                <div class="form-check">
+                                    {{ field }}
+                                    <label class="form-check-label">{{ field.label }}</label>
+                                </div>
+                            {% else %}
+                                <label class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                            {% endif %}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">{{ field.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button class="btn btn-primary">Сохранить настройки</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="j-card">
+            <div class="j-card-header">Обновить точку</div>
+            <div class="j-card-body">
+                <form method="post" class="d-grid gap-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="ping">
+                    {% for field in ping_form %}
+                        <div>
+                            <label class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">{{ field.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button class="btn btn-outline-primary" type="button" id="fill-current-location">Подставить текущую геопозицию</button>
+                    <button class="btn btn-primary">Сохранить текущую точку</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-7">
+        <div class="j-card mb-4">
+            <div class="j-card-header d-flex flex-wrap justify-content-between gap-2">
+                <span>Текущее местоположение и маршрут</span>
+                <div class="btn-group btn-group-sm">
+                    <a href="?period=today{% if subject_query %}&{{ subject_query }}{% endif %}" class="btn {% if period == 'today' %}btn-primary{% else %}btn-outline-primary{% endif %}">Сегодня</a>
+                    <a href="?period=week{% if subject_query %}&{{ subject_query }}{% endif %}" class="btn {% if period == 'week' %}btn-primary{% else %}btn-outline-primary{% endif %}">Неделя</a>
+                    <a href="?period=month{% if subject_query %}&{{ subject_query }}{% endif %}" class="btn {% if period == 'month' %}btn-primary{% else %}btn-outline-primary{% endif %}">Месяц</a>
+                </div>
+            </div>
+            <div class="j-card-body">
+                {% if last_location %}
+                    <div class="display-6 fw-semibold mb-2">{{ last_location.latitude }}, {{ last_location.longitude }}</div>
+                    <div class="small text-muted mb-2">{{ last_location.captured_at|date:"d.m.Y H:i" }} · {{ last_location.get_source_display }}</div>
+                    {% if last_location.note %}
+                        <div class="small mb-3">{{ last_location.note }}</div>
+                    {% endif %}
+                    <div id="map" style="height: 360px;" class="rounded-3 border mb-3"></div>
+                    <a class="btn btn-outline-secondary btn-sm" target="_blank" rel="noreferrer" href="https://maps.google.com/?q={{ last_location.latitude }},{{ last_location.longitude }}">
+                        Открыть на карте
+                    </a>
+                {% else %}
+                    {% include "components/empty_state.html" with icon="geo-alt" title="Точка ещё не передана" text="Добавьте первую координату вручную или через телефон / браслет." %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="j-card mb-4">
+            <div class="j-card-header">Безопасные зоны</div>
+            <div class="j-card-body">
+                {% if safe_zones %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for zone in safe_zones %}
+                            <div class="border rounded-3 p-3">
+                                <div class="d-flex justify-content-between gap-3">
+                                    <div>
+                                        <div class="fw-semibold">{{ zone.name }}</div>
+                                        <div class="small text-muted">{{ zone.latitude }}, {{ zone.longitude }} · радиус {{ zone.radius_meters }} м</div>
+                                    </div>
+                                    {% if zone.is_home %}
+                                        <span class="badge text-bg-success">Дом</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-muted">Пока нет настроенных зон. Добавьте дом или поликлинику.</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="j-card">
+            <div class="j-card-header">История перемещений</div>
+            <div class="j-card-body">
+                {% if recent_locations %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for ping in recent_locations %}
+                            <div class="border rounded-3 p-3 {% if ping.is_emergency %}border-danger{% endif %}">
+                                <div class="d-flex justify-content-between gap-3">
+                                    <div>
+                                        <div class="fw-semibold">{{ ping.latitude }}, {{ ping.longitude }}</div>
+                                        <div class="small text-muted">{{ ping.captured_at|date:"d.m.Y H:i" }} · {{ ping.get_source_display }}</div>
+                                        {% if ping.note %}
+                                            <div class="small mt-1">{{ ping.note }}</div>
+                                        {% endif %}
+                                    </div>
+                                    {% if ping.is_emergency %}
+                                        <span class="badge text-bg-danger">SOS</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-muted">История появится после первых обновлений.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ location_map_data|json_script:"location-map-data" }}
+{{ safe_zones_map_data|json_script:"safe-zones-map-data" }}
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+    const latField = document.getElementById("id_latitude");
+    const lngField = document.getElementById("id_longitude");
+    const sosLatField = document.getElementById("sos-latitude");
+    const sosLngField = document.getElementById("sos-longitude");
+    const fillButton = document.getElementById("fill-current-location");
+
+    const updateCoords = (position) => {
+        const lat = position.coords.latitude.toFixed(6);
+        const lng = position.coords.longitude.toFixed(6);
+        if (latField && lngField) {
+            latField.value = lat;
+            lngField.value = lng;
+        }
+        if (sosLatField && sosLngField) {
+            sosLatField.value = lat;
+            sosLngField.value = lng;
+        }
+    };
+
+    if (navigator.geolocation) {
+        fillButton?.addEventListener("click", () => {
+            navigator.geolocation.getCurrentPosition(updateCoords);
+        });
+        navigator.geolocation.getCurrentPosition(updateCoords, () => {});
+    }
+
+    const mapDataNode = document.getElementById("location-map-data");
+    const safeZonesNode = document.getElementById("safe-zones-map-data");
+    const mapContainer = document.getElementById("map");
+    if (!mapContainer || !window.ymaps || !mapDataNode) {
+        return;
+    }
+
+    const points = JSON.parse(mapDataNode.textContent || "[]");
+    const safeZones = JSON.parse(safeZonesNode?.textContent || "[]");
+    if (!points.length) {
+        return;
+    }
+
+    ymaps.ready(() => {
+        const map = new ymaps.Map("map", {
+            center: [points[points.length - 1].latitude, points[points.length - 1].longitude],
+            zoom: 13,
+            controls: ["zoomControl", "fullscreenControl"],
+        });
+
+        const routeCoordinates = [];
+        points.forEach((point) => {
+            routeCoordinates.push([point.latitude, point.longitude]);
+            map.geoObjects.add(new ymaps.Placemark(
+                [point.latitude, point.longitude],
+                {
+                    balloonContent: `<strong>${point.captured_at}</strong><br>${point.source}<br>${point.note || ""}`,
+                },
+                {
+                    preset: point.is_emergency ? "islands#redIcon" : "islands#blueIcon",
+                }
+            ));
+        });
+
+        if (routeCoordinates.length > 1) {
+            map.geoObjects.add(new ymaps.Polyline(routeCoordinates, {}, {
+                strokeColor: "#1f6feb",
+                strokeWidth: 4,
+                opacity: 0.8,
+            }));
+        }
+
+        safeZones.forEach((zone) => {
+            map.geoObjects.add(new ymaps.Circle(
+                [[zone.latitude, zone.longitude], zone.radius_meters],
+                {
+                    balloonContent: `${zone.name} · радиус ${zone.radius_meters} м`,
+                },
+                {
+                    fillColor: zone.is_home ? "rgba(35,134,54,0.14)" : "rgba(255,170,0,0.10)",
+                    strokeColor: zone.is_home ? "#238636" : "#d97706",
+                    strokeWidth: 2,
+                }
+            ));
+        });
+
+        map.setBounds(map.geoObjects.getBounds(), {
+            checkZoomRange: true,
+            zoomMargin: 30,
+        });
+    });
+})();
+</script>
+{% endblock %}
