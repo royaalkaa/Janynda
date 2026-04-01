@@ -1,0 +1,160 @@
+{% extends "base/subject.html" %}
+
+{% block title %}Мои показатели · Janynda{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">Здравствуйте, {{ user.get_display_name }}</h1>
+    <p class="text-muted mb-0">Быстрый ввод ниже занимает меньше 30 секунд.</p>
+</div>
+
+{% if ai_comment %}
+    <div class="j-alert success mb-4">
+        <i class="bi bi-stars"></i>
+        <div>{{ ai_comment.content }}</div>
+    </div>
+{% endif %}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        {% with metric=latest_metrics.blood_pressure %}
+            {% if metric %}
+                {% include "components/metric_card.html" with status=metric.get_severity title="Давление" value=metric.get_display_value unit="мм рт.ст." icon="heart-pulse" color_class="green" note=metric.recorded_at|date:"d.m H:i" %}
+            {% else %}
+                {% include "components/metric_card.html" with status="none" title="Давление" value="—" icon="heart-pulse" color_class="green" note="Ещё не вводили" %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    <div class="col-md-4">
+        {% with metric=latest_metrics.heart_rate %}
+            {% if metric %}
+                {% include "components/metric_card.html" with status=metric.get_severity title="Пульс" value=metric.get_display_value icon="activity" color_class="yellow" note=metric.recorded_at|date:"d.m H:i" %}
+            {% else %}
+                {% include "components/metric_card.html" with status="none" title="Пульс" value="—" icon="activity" color_class="yellow" note="Ещё не вводили" %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    <div class="col-md-4">
+        {% with metric=latest_metrics.steps %}
+            {% if metric %}
+                {% include "components/metric_card.html" with status=metric.get_severity title="Шаги" value=metric.get_display_value icon="shoe-print" color_class="blue" note=metric.recorded_at|date:"d.m H:i" %}
+            {% else %}
+                {% include "components/metric_card.html" with status="none" title="Шаги" value="—" icon="shoe-print" color_class="blue" note="Ещё не вводили" %}
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="j-card mb-4">
+            <div class="j-card-header">Быстрый ввод давления</div>
+            <div class="j-card-body">
+                <form hx-post="{% url 'health-quick-entry' 'blood_pressure' %}" hx-target="#bp-result" hx-swap="innerHTML" class="j-quick-entry">
+                    {% csrf_token %}
+                    <div class="j-field-group">
+                        <div class="flex-fill">
+                            <input type="number" name="systolic" class="j-metric-input" placeholder="120" required>
+                            <div class="j-metric-input-label">Систолическое</div>
+                        </div>
+                        <div class="flex-fill">
+                            <input type="number" name="diastolic" class="j-metric-input" placeholder="80" required>
+                            <div class="j-metric-input-label">Диастолическое</div>
+                        </div>
+                        <div class="flex-fill">
+                            <input type="number" name="pulse" class="j-metric-input" placeholder="72">
+                            <div class="j-metric-input-label">Пульс</div>
+                        </div>
+                    </div>
+                    <button class="j-submit-btn" type="submit">Сохранить давление</button>
+                </form>
+                <div id="bp-result" class="mt-3" data-autoclear="true"></div>
+            </div>
+        </div>
+
+        <div class="j-card">
+            <div class="j-card-header">Быстрый ввод шагов</div>
+            <div class="j-card-body">
+                <form hx-post="{% url 'health-quick-entry' 'steps' %}" hx-target="#steps-result" hx-swap="innerHTML" class="j-quick-entry">
+                    {% csrf_token %}
+                    <div class="j-field-group">
+                        <div class="flex-fill">
+                            <input type="number" name="steps" class="j-metric-input" placeholder="6800" required>
+                            <div class="j-metric-input-label">Шагов за день</div>
+                        </div>
+                    </div>
+                    <button class="j-submit-btn" type="submit">Сохранить шаги</button>
+                </form>
+                <div id="steps-result" class="mt-3" data-autoclear="true"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="j-card mb-4">
+            <div class="j-card-header">Быстрый ввод пульса</div>
+            <div class="j-card-body">
+                <form hx-post="{% url 'health-quick-entry' 'heart_rate' %}" hx-target="#hr-result" hx-swap="innerHTML" class="j-quick-entry">
+                    {% csrf_token %}
+                    <div class="j-field-group">
+                        <div class="flex-fill">
+                            <input type="number" name="bpm" class="j-metric-input" placeholder="72" required>
+                            <div class="j-metric-input-label">Ударов в минуту</div>
+                        </div>
+                    </div>
+                    <button class="j-submit-btn" type="submit">Сохранить пульс</button>
+                </form>
+                <div id="hr-result" class="mt-3" data-autoclear="true"></div>
+            </div>
+        </div>
+
+        <div class="j-card">
+            <div class="j-card-header">Мои наблюдатели</div>
+            <div class="j-card-body">
+                {% if family_links %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for item in family_links %}
+                            <div class="border rounded-3 p-3 bg-light">
+                                <div class="fw-semibold">{{ item.observer.get_display_name }}</div>
+                                <div class="small text-muted">Видит ваши показатели и уведомления по рискам.</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Пока никто не подключён как наблюдатель.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-6">
+        <div class="j-card">
+            <div class="j-card-header">Шаги за 7 дней</div>
+            <div class="j-card-body">
+                <div class="j-chart-container" style="height: 260px;">
+                    <canvas id="steps-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="j-card">
+            <div class="j-card-header">Давление за последние записи</div>
+            <div class="j-card-body">
+                <div class="j-chart-container" style="height: 260px;">
+                    <canvas id="bp-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    JanyndaCharts.renderStepsChart("steps-chart", {{ chart_payload.labels_json|safe }}, {{ chart_payload.steps_json|safe }});
+    JanyndaCharts.renderBloodPressureChart("bp-chart", {{ chart_payload.bp_json|safe }});
+</script>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% if record %}
+    <div class="j-alert success">
+        <i class="bi bi-check-circle"></i>
+        <div>
+            Сохранено: <strong>{{ record.get_metric_type_display }}</strong> — {{ record.get_display_value }}.
+        </div>
+    </div>
+{% elif form %}
+    <div class="j-alert danger">
+        <i class="bi bi-exclamation-circle"></i>
+        <div>Не удалось сохранить запись. Проверьте введённые значения.</div>
+    </div>
+{% endif %}

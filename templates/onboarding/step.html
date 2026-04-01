@@ -1,0 +1,40 @@
+{% extends "base/base.html" %}
+
+{% block title %}Onboarding · Janynda{% endblock %}
+
+{% block layout %}
+<div class="container py-5">
+    <div class="j-onboarding-card">
+        <div class="j-wizard-steps">
+            {% for step_num, step_config in steps.items %}
+                <div class="j-wizard-step-dot {% if step_num < step %}completed{% elif step_num == step %}active{% endif %}"></div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mb-4">
+            <div class="text-primary fw-semibold mb-2">Шаг {{ step }} из {{ steps|length }}</div>
+            <h1 class="j-onboarding-title">{{ title }}</h1>
+            <p class="j-onboarding-subtitle">{{ subtitle }}</p>
+        </div>
+
+        <form method="post" class="d-grid gap-3">
+            {% csrf_token %}
+            {% for field in form %}
+                <div>
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text|safe }}</div>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors|join:", " }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary btn-lg mt-2">
+                {% if is_last_step %}Завершить и открыть дашборд{% else %}Продолжить{% endif %}
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

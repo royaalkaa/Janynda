@@ -1,0 +1,56 @@
+{% extends base_template %}
+
+{% block title %}История метрик · Janynda{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">История метрик</h1>
+        <p class="text-muted mb-0">{{ subject.get_display_name }}</p>
+    </div>
+    <form method="get" class="d-flex gap-2">
+        <select name="metric_type" class="form-select">
+            <option value="">Все метрики</option>
+            {% for value, label in metric_choices %}
+                <option value="{{ value }}" {% if selected_metric_type == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-outline-primary" type="submit">Фильтр</button>
+    </form>
+</div>
+
+<div class="j-card">
+    <div class="j-card-body p-0">
+        {% if records %}
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Метрика</th>
+                            <th>Значение</th>
+                            <th>Статус</th>
+                            <th>Дата</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in records %}
+                            <tr>
+                                <td>{{ record.get_metric_type_display }}</td>
+                                <td>{{ record.get_display_value }}</td>
+                                <td>
+                                    <span class="badge {% if record.get_severity == 'critical' %}j-badge-critical{% elif record.get_severity == 'warning' %}j-badge-warning{% else %}j-badge-normal{% endif %}">
+                                        {% if record.get_severity == "critical" %}Критично{% elif record.get_severity == "warning" %}Внимание{% else %}Норма{% endif %}
+                                    </span>
+                                </td>
+                                <td>{{ record.recorded_at|date:"d.m.Y H:i" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            {% include "components/empty_state.html" with icon="graph-up" title="История пока пустая" text="После первых записей здесь появится динамика показателей." %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

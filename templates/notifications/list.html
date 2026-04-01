@@ -1,0 +1,43 @@
+{% extends "base/observer.html" %}
+
+{% block title %}Уведомления · Janynda{% endblock %}
+{% block topbar_title %}Уведомления{% endblock %}
+{% block topbar_subtitle %}Все сигналы по здоровью, погоде и активности семьи{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Центр уведомлений</h1>
+    <form method="post" action="{% url 'notification-read-all' %}">
+        {% csrf_token %}
+        <button class="btn btn-outline-primary">Отметить всё как прочитанное</button>
+    </form>
+</div>
+
+<div class="d-flex flex-column gap-3">
+    {% for notification in notifications %}
+        <div class="j-card">
+            <div class="j-card-body d-flex justify-content-between gap-3">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi {{ notification.severity_icon }} text-{{ notification.severity_color }}"></i>
+                        <div class="fw-semibold">{{ notification.title }}</div>
+                        {% if not notification.is_read %}
+                            <span class="badge text-bg-light border">Новое</span>
+                        {% endif %}
+                    </div>
+                    <div class="text-muted mb-2">{{ notification.body }}</div>
+                    <div class="small text-muted">{{ notification.created_at|date:"d.m.Y H:i" }}</div>
+                </div>
+                {% if not notification.is_read %}
+                    <form method="post" action="{% url 'notification-read' notification.id %}">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-outline-secondary">Прочитано</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        {% include "components/empty_state.html" with icon="bell" title="Уведомлений пока нет" text="Как только появятся алерты или напоминания, они будут собираться здесь." %}
+    {% endfor %}
+</div>
+{% endblock %}

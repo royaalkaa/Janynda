@@ -1,0 +1,28 @@
+{% extends base_template %}
+
+{% block title %}AI-помощник · Janynda{% endblock %}
+{% block topbar_title %}AI-помощник{% endblock %}
+{% block topbar_subtitle %}Краткий комментарий по текущим данным и погодным условиям{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-8">
+        <div class="j-card">
+            <div class="j-card-header">Фокус: {{ subject.get_display_name }}</div>
+            <div class="j-card-body">
+                {% if comment %}
+                    <div class="j-alert success mb-4">
+                        <i class="bi bi-stars"></i>
+                        <div>{{ comment.content }}</div>
+                    </div>
+                {% else %}
+                    {% include "components/empty_state.html" with icon="stars" title="Пока не на что комментировать" text="После первых записей метрик здесь появится краткий AI-комментарий по тренду и активности." %}
+                {% endif %}
+                <div class="small text-muted">
+                    Полноценный чат и рекомендации по прогнозу погоды можно добавить следующим шагом поверх уже собранной структуры.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

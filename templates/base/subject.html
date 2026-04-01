@@ -1,0 +1,31 @@
+{% extends "base/base.html" %}
+
+{% block body_class %}bg-light{% endblock %}
+
+{% block layout %}
+<div class="j-subject-layout">
+    <div class="j-subject-topbar">
+        <a href="{% url 'subject-dashboard' %}" class="brand text-decoration-none">
+            <i class="bi bi-heart-pulse"></i> Janynda
+        </a>
+        <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-secondary">Выйти</a>
+    </div>
+    <main class="j-subject-content">
+        {% block content %}{% endblock %}
+    </main>
+    <nav class="j-subject-bottomnav">
+        <a href="{% url 'subject-dashboard' %}" class="{% if request.path == '/dashboard/subject/' %}active{% endif %}">
+            <i class="bi bi-house"></i>
+            <span>Главная</span>
+        </a>
+        <a href="{% url 'health-history' %}" class="{% if request.path == '/health/history/' %}active{% endif %}">
+            <i class="bi bi-graph-up"></i>
+            <span>История</span>
+        </a>
+        <a href="{% url 'ai-assistant' %}" class="{% if request.path == '/ai/' %}active{% endif %}">
+            <i class="bi bi-stars"></i>
+            <span>AI</span>
+        </a>
+    </nav>
+</div>
+{% endblock %}

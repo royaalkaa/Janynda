@@ -1,0 +1,36 @@
+{% extends "base/observer.html" %}
+
+{% block title %}Погода · Janynda{% endblock %}
+{% block topbar_title %}Погода{% endblock %}
+{% block topbar_subtitle %}Температура, воздух и рекомендация для прогулок{% endblock %}
+
+{% block content %}
+<div class="j-card">
+    <div class="j-card-body">
+        {% if weather %}
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-4">
+                    <div class="display-4 fw-semibold mb-2">{{ weather.temperature_c }}°C</div>
+                    <div class="text-muted">{{ weather.city }} · {{ weather.weather_desc }}</div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="small text-muted mb-1">Ощущается как</div>
+                    <div class="h4">{{ weather.feels_like_c }}°C</div>
+                    <div class="small text-muted mt-3 mb-1">Качество воздуха</div>
+                    <span class="badge text-bg-{{ weather.aqi_color_class }}">AQI {{ weather.aqi|default:"—" }}</span>
+                </div>
+                <div class="col-lg-4">
+                    {% with recommendation=weather.get_walk_recommendation %}
+                        <div class="j-alert {{ recommendation.0 }}">
+                            <i class="bi bi-cloud-sun"></i>
+                            <div>{{ recommendation.1 }}</div>
+                        </div>
+                    {% endwith %}
+                </div>
+            </div>
+        {% else %}
+            {% include "components/empty_state.html" with icon="cloud-sun" title="Погода ещё не загружена" text="После подключения OpenWeatherMap здесь появятся температура, AQI и рекомендации для прогулок." %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base/base.html" %}
+
+{% block title %}Janynda{% endblock %}
+
+{% block layout %}
+<div class="container py-5">
+    <div class="row align-items-center g-5 py-5">
+        <div class="col-lg-6">
+            <span class="badge text-bg-light border text-primary mb-3">AI health tracker for family care</span>
+            <h1 class="display-5 fw-bold mb-3">Следите за здоровьем близких без перегруза интерфейсом</h1>
+            <p class="lead text-muted mb-4">
+                Janynda помогает семье видеть давление, пульс, шаги, погодные риски и быстрые AI-комментарии
+                в одном белом, понятном дашборде.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard-home' %}" class="btn btn-primary btn-lg">Открыть дашборд</a>
+                {% else %}
+                    <a href="{% url 'signup' %}" class="btn btn-primary btn-lg">Создать аккаунт</a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">Войти</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="j-card p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        {% include "components/metric_card.html" with status="normal" icon="heart-pulse" color_class="green" title="Давление" value="124/81" unit="мм рт.ст." note="Последняя запись 20 минут назад" %}
+                    </div>
+                    <div class="col-md-6">
+                        {% include "components/metric_card.html" with status="warning" icon="activity" color_class="yellow" title="Пульс" value="102" unit="уд/мин" note="Требуется наблюдение" %}
+                    </div>
+                    <div class="col-md-6">
+                        {% include "components/metric_card.html" with status="normal" icon="shoe-print" color_class="blue" title="Шаги" value="6 840" unit="сегодня" note="До цели осталось 1 160" %}
+                    </div>
+                    <div class="col-md-6">
+                        {% include "components/metric_card.html" with status="warning" icon="cloud-haze" color_class="red" title="Воздух" value="AQI 4" unit="" note="Лучше перенести прогулку" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

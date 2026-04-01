@@ -1,0 +1,13 @@
+<div class="j-metric-card status-{{ status|default:'none' }}">
+    <div class="j-metric-icon {{ color_class|default:'green' }}">
+        <i class="bi bi-{{ icon|default:'heart' }}"></i>
+    </div>
+    <div class="j-metric-label">{{ title }}</div>
+    <div class="j-metric-value">
+        {{ value }}
+        {% if unit %}<span class="j-metric-unit">{{ unit }}</span>{% endif %}
+    </div>
+    {% if note %}
+        <div class="j-metric-trend">{{ note }}</div>
+    {% endif %}
+</div>

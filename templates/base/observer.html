@@ -1,0 +1,82 @@
+{% extends "base/base.html" %}
+
+{% block body_class %}bg-light{% endblock %}
+
+{% block layout %}
+<div class="j-layout">
+    <aside class="j-sidebar">
+        <div class="j-sidebar-logo">
+            <a href="{% url 'observer-dashboard' %}" class="brand">
+                <i class="bi bi-heart-pulse"></i>
+                Janynda
+            </a>
+        </div>
+        <div class="j-sidebar-user">
+            <div class="j-sidebar-user-avatar">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="{{ user.get_display_name }}" class="w-100 h-100 rounded-circle">
+                {% else %}
+                    {{ user.get_display_name|slice:":1"|upper }}
+                {% endif %}
+            </div>
+            <div>
+                <div class="j-sidebar-user-name">{{ user.get_display_name }}</div>
+                <div class="j-sidebar-user-role">Наблюдающий режим</div>
+            </div>
+        </div>
+        <nav class="j-nav">
+            <div class="j-nav-section">Основное</div>
+            <a href="{% url 'observer-dashboard' %}" class="j-nav-link {% if request.path == '/dashboard/observer/' %}active{% endif %}">
+                <i class="bi bi-grid"></i> Дашборд
+            </a>
+            {% if user.is_subject %}
+                <a href="{% url 'subject-dashboard' %}" class="j-nav-link {% if request.path == '/dashboard/subject/' %}active{% endif %}">
+                    <i class="bi bi-person-heart"></i> Мой режим
+                </a>
+            {% endif %}
+            <a href="{% url 'family-overview' %}" class="j-nav-link {% if request.path == '/family/' %}active{% endif %}">
+                <i class="bi bi-people"></i> Семья
+            </a>
+            <a href="{% url 'challenge-list' %}" class="j-nav-link {% if request.path == '/challenges/' %}active{% endif %}">
+                <i class="bi bi-trophy"></i> Челленджи
+            </a>
+            <div class="j-nav-section">Сервисы</div>
+            <a href="{% url 'notifications-list' %}" class="j-nav-link {% if request.path == '/notifications/' %}active{% endif %}">
+                <i class="bi bi-bell"></i> Уведомления
+                {% if unread_notifications_count %}
+                    <span class="badge text-bg-danger">{{ unread_notifications_count }}</span>
+                {% endif %}
+            </a>
+            <a href="{% url 'weather-index' %}" class="j-nav-link {% if request.path == '/weather/' %}active{% endif %}">
+                <i class="bi bi-cloud-sun"></i> Погода
+            </a>
+            <a href="{% url 'ai-assistant' %}" class="j-nav-link {% if request.path == '/ai/' %}active{% endif %}">
+                <i class="bi bi-stars"></i> AI-помощник
+            </a>
+            <a href="{% url 'logout' %}" class="j-nav-link">
+                <i class="bi bi-box-arrow-right"></i> Выйти
+            </a>
+        </nav>
+    </aside>
+
+    <main class="j-main">
+        <div class="j-topbar">
+            <div>
+                <div class="fw-semibold">{% block topbar_title %}Панель наблюдения{% endblock %}</div>
+                <div class="text-muted small">{% block topbar_subtitle %}Семья, алерты и ключевые метрики в одном месте{% endblock %}</div>
+            </div>
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <a href="{% url 'notifications-list' %}" class="j-notif-btn text-decoration-none">
+                    <i class="bi bi-bell"></i>
+                    {% if unread_notifications_count %}
+                        <span class="j-notif-badge">{{ unread_notifications_count }}</span>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+        <div class="j-content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+</div>
+{% endblock %}

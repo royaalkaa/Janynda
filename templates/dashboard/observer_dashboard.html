@@ -1,0 +1,141 @@
+{% extends "base/observer.html" %}
+
+{% block title %}Панель наблюдения · Janynda{% endblock %}
+{% block topbar_title %}Панель наблюдения{% endblock %}
+{% block topbar_subtitle %}Семья, статусы и первые сигналы риска{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h2 class="h4 mb-1">Состояние семьи</h2>
+                <p class="text-muted mb-0">Карточки показывают последний статус по каждому близкому.</p>
+            </div>
+            <a href="{% url 'family-overview' %}" class="btn btn-primary">Добавить родственника</a>
+        </div>
+
+        {% if snapshots %}
+            <div class="row g-3">
+                {% for item in snapshots %}
+                    <div class="col-md-6">
+                        <div class="j-member-card">
+                            <div class="j-member-status-bar {{ item.status }}"></div>
+                            <div class="d-flex justify-content-between gap-3 mb-3">
+                                <div class="d-flex gap-3">
+                                    <div class="j-member-avatar">
+                                        {{ item.membership.get_subject_display_name|slice:":1"|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="j-member-name">{{ item.membership.get_subject_display_name }}</div>
+                                        <div class="j-member-relation">{{ item.membership.get_relation_display_name }}</div>
+                                        {% if item.last_seen %}
+                                            <div class="j-member-last-seen">Последняя запись: {{ item.last_seen|date:"d.m.Y H:i" }}</div>
+                                        {% else %}
+                                            <div class="j-member-last-seen">Пока нет записей</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <span class="j-traffic-light {{ item.status }}">
+                                    {% if item.status == "critical" %}Критично{% elif item.status == "warning" %}Внимание{% elif item.status == "normal" %}Норма{% else %}Нет данных{% endif %}
+                                </span>
+                            </div>
+
+                            <div class="row g-2 mb-3">
+                                {% for key, metric in item.latest_metrics.items %}
+                                    <div class="col-4">
+                                        <div class="border rounded-3 p-2 bg-light h-100">
+                                            <div class="small text-muted">{{ metric.get_metric_type_display }}</div>
+                                            <div class="fw-semibold">{{ metric.get_display_value }}</div>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="col-12">
+                                        <div class="border rounded-3 p-3 bg-light text-muted small">
+                                            Попросите родственника внести первые показатели через magic link.
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2">
+                                {% if item.membership.subject %}
+                                    <a href="{% url 'health-history-subject' item.membership.subject.id %}" class="btn btn-sm btn-outline-primary">История</a>
+                                {% endif %}
+                                {% if item.membership.magic_link %}
+                                    <span class="badge text-bg-light border">Magic link активен</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            {% include "components/empty_state.html" with icon="people" title="Семья пока не собрана" text="Добавьте первого родственника, чтобы увидеть его карточку, magic link и статусы на дашборде." action_url="/family/" action_label="Добавить родственника" %}
+        {% endif %}
+    </div>
+
+    <div class="col-xl-4">
+        <div class="j-card mb-4">
+            <div class="j-card-header">AI-комментарий</div>
+            <div class="j-card-body">
+                {% if ai_comment %}
+                    <div class="j-alert success">
+                        <i class="bi bi-stars"></i>
+                        <div>{{ ai_comment.content }}</div>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Комментарий появится после первой записи метрик.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="j-card mb-4">
+            <div class="j-card-header">Погода и воздух</div>
+            <div class="j-card-body">
+                {% if weather %}
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <div class="text-muted small">{{ weather.city }}</div>
+                            <div class="display-6 fw-semibold">{{ weather.temperature_c }}°</div>
+                        </div>
+                        {% if weather.aqi %}
+                            <span class="badge text-bg-{{ weather.aqi_color_class }}">AQI {{ weather.aqi }}</span>
+                        {% endif %}
+                    </div>
+                    {% with recommendation=weather.get_walk_recommendation %}
+                        <div class="j-alert {{ recommendation.0 }}">
+                            <i class="bi bi-cloud-sun"></i>
+                            <div>{{ recommendation.1 }}</div>
+                        </div>
+                    {% endwith %}
+                {% else %}
+                    <p class="text-muted mb-0">Погодный виджет появится после первого обновления из OpenWeatherMap.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="j-card">
+            <div class="j-card-header">Активные челленджи</div>
+            <div class="j-card-body">
+                {% if challenge_list %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for challenge in challenge_list %}
+                            <div class="border rounded-3 p-3">
+                                <div class="fw-semibold">{{ challenge.title }}</div>
+                                <div class="small text-muted mb-2">{{ challenge.description|default:"Семейный челлендж по активности" }}</div>
+                                <div class="j-progress mb-2">
+                                    <div class="j-progress-bar" style="width: {{ challenge.progress_pct }}%;"></div>
+                                </div>
+                                <div class="small text-muted">До конца: {{ challenge.days_left }} дн.</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Челленджи пока не созданы. Их можно добавить следующей итерацией.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

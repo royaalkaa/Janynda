@@ -1,0 +1,12 @@
+<div class="j-card">
+    <div class="j-empty-state">
+        <div class="j-empty-state-icon">
+            <i class="bi bi-{{ icon|default:'inbox' }}"></i>
+        </div>
+        <div class="j-empty-state-title">{{ title }}</div>
+        <div class="j-empty-state-text">{{ text }}</div>
+        {% if action_url and action_label %}
+            <a href="{{ action_url }}" class="btn btn-primary">{{ action_label }}</a>
+        {% endif %}
+    </div>
+</div>

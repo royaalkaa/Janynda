@@ -1,0 +1,62 @@
+{% extends "base/observer.html" %}
+
+{% block title %}Семья · Janynda{% endblock %}
+{% block topbar_title %}Семья{% endblock %}
+{% block topbar_subtitle %}Добавляйте близких и раздавайте magic link для быстрого ввода{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="j-card">
+            <div class="j-card-header">Добавить родственника</div>
+            <div class="j-card-body">
+                <form method="post" class="d-grid gap-3">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div>
+                            <label class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">{{ field.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">Добавить и создать magic link</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="j-card">
+            <div class="j-card-header">Участники семьи</div>
+            <div class="j-card-body">
+                {% if invite_rows %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for row in invite_rows %}
+                            <div class="border rounded-3 p-3">
+                                <div class="d-flex justify-content-between gap-3 mb-2">
+                                    <div>
+                                        <div class="fw-semibold">{{ row.membership.get_subject_display_name }}</div>
+                                        <div class="small text-muted">{{ row.membership.get_relation_display_name }}</div>
+                                    </div>
+                                    {% if row.membership.subject %}
+                                        <span class="badge text-bg-success">Активен</span>
+                                    {% else %}
+                                        <span class="badge text-bg-secondary">Ожидает подключения</span>
+                                    {% endif %}
+                                </div>
+                                {% if row.invite_url %}
+                                    <label class="form-label small text-muted">Magic link</label>
+                                    <input type="text" class="form-control" readonly value="{{ row.invite_url }}">
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {% include "components/empty_state.html" with icon="person-plus" title="Родственников пока нет" text="Добавьте первого человека, чтобы запустить семейный мониторинг и открыть ему быстрый доступ." %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
