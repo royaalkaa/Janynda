@@ -1,0 +1,183 @@
+{% extends base_template %}
+
+{% block title %}Полезные места · Janynda{% endblock %}
+{% block topbar_title %}Полезные места{% endblock %}
+{% block topbar_subtitle %}Куда можно сходить за активностью, поддержкой или медицинской помощью{% endblock %}
+
+{% block head %}
+<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU"></script>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Подборка для {{ subject.get_display_name }}</h1>
+        <div class="text-muted">Город: {{ selected_city }}</div>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        {% if subject_choices %}
+            {% for candidate in subject_choices %}
+                <a href="{% url 'care-places' %}?subject_id={{ candidate.id }}&city={{ selected_city }}" class="btn {% if candidate == subject %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                    {{ candidate.get_display_name }}
+                </a>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<div class="j-card mb-4">
+    <div class="j-card-body">
+        <form method="get" class="row g-3 align-items-end">
+            {% if subject != request.user %}
+                <input type="hidden" name="subject_id" value="{{ subject.id }}">
+            {% endif %}
+            <div class="col-md-4">
+                <label class="form-label">Город</label>
+                <input type="text" name="city" class="form-control" value="{{ selected_city }}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Категория</label>
+                <select name="category" class="form-select">
+                    {% for value, label in place_categories %}
+                        <option value="{{ value }}"{% if value == selected_category %} selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <div class="form-check mt-4">
+                    <input class="form-check-input" type="checkbox" name="favorites" value="1" id="favorites-only" {% if favorites_only %}checked{% endif %}>
+                    <label class="form-check-label" for="favorites-only">Только избранные</label>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary">Обновить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="j-card mb-4">
+    <div class="j-card-header">Карта мест</div>
+    <div class="j-card-body">
+        <div id="places-map" style="height: 380px;" class="rounded-3 border"></div>
+    </div>
+</div>
+
+{% if featured_places %}
+    <div class="row g-3 mb-4">
+        {% for place in featured_places %}
+            <div class="col-lg-6">
+                <div class="j-card h-100">
+                    <div class="j-card-body">
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                            <div>
+                                <div class="fw-semibold">{{ place.name }}</div>
+                                <div class="small text-muted">{{ place.category_label }}</div>
+                            </div>
+                            <span class="badge text-bg-light border">Рекомендуем</span>
+                        </div>
+                        <div class="small mb-2">{{ place.description }}</div>
+                        <div class="small text-muted mb-1">{{ place.address }}</div>
+                        {% if place.working_hours %}
+                            <div class="small text-muted">Часы: {{ place.working_hours }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="row g-3">
+    {% for place in places %}
+        <div class="col-lg-6">
+            <div class="border rounded-3 p-3 h-100 bg-white">
+                <div class="d-flex justify-content-between gap-3 mb-2">
+                    <div>
+                        <div class="fw-semibold">{{ place.name }}</div>
+                        <div class="small text-muted">{{ place.category_label }}</div>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <span class="badge text-bg-light border">{{ place.city }}</span>
+                        {% if place.id %}
+                            <form method="post" action="{% url 'toggle_favorite' place.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <button class="btn btn-link p-0 text-decoration-none" type="submit" aria-label="Избранное">
+                                    <i class="bi {% if place.is_favorite %}bi-star-fill text-warning{% else %}bi-star text-muted{% endif %}"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="small mb-2">{{ place.description }}</div>
+                <div class="small text-muted mb-1">{{ place.address }}</div>
+                {% if place.distance_km %}
+                    <div class="small text-muted mb-1">От дома: {{ place.distance_km }} км</div>
+                {% endif %}
+                {% if place.working_hours %}
+                    <div class="small text-muted mb-1">Часы: {{ place.working_hours }}</div>
+                {% endif %}
+                {% if place.phone %}
+                    <div class="small text-muted mb-1">Телефон: {{ place.phone }}</div>
+                {% endif %}
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    {% if place.website %}
+                        <a href="{{ place.website }}" target="_blank" rel="noreferrer" class="btn btn-outline-secondary btn-sm">Сайт</a>
+                    {% endif %}
+                    {% if place.route_url %}
+                        <a href="{{ place.route_url }}" target="_blank" rel="noreferrer" class="btn btn-outline-primary btn-sm">Построить маршрут</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            {% include "components/empty_state.html" with icon="pin-map" title="Под эту выборку мест пока нет" text="Смените город, снимите фильтр избранного или добавьте карточки в админке." %}
+        </div>
+    {% endfor %}
+</div>
+
+{{ places_map_data|json_script:"places-map-data" }}
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+    const dataNode = document.getElementById("places-map-data");
+    const mapContainer = document.getElementById("places-map");
+    if (!dataNode || !mapContainer || !window.ymaps) {
+        return;
+    }
+    const places = JSON.parse(dataNode.textContent || "[]");
+
+    ymaps.ready(() => {
+        const center = places.length ? [places[0].latitude, places[0].longitude] : [43.238949, 76.889709];
+        const map = new ymaps.Map("places-map", {
+            center,
+            zoom: 12,
+            controls: ["zoomControl", "fullscreenControl"],
+        });
+
+        places.forEach((place) => {
+            map.geoObjects.add(new ymaps.Placemark(
+                [place.latitude, place.longitude],
+                {
+                    balloonContent: `
+                        <strong>${place.name}</strong><br>
+                        ${place.category_label}<br>
+                        ${place.address}<br>
+                        ${place.working_hours || ""}
+                    `,
+                }
+            ));
+        });
+
+        if (map.geoObjects.getLength()) {
+            map.setBounds(map.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 30 });
+        }
+    });
+})();
+</script>
+{% endblock %}
