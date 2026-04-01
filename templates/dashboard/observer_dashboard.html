@@ -5,6 +5,14 @@
 {% block topbar_subtitle %}Семья, статусы и первые сигналы риска{% endblock %}
 
 {% block content %}
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{% url 'care-plan' %}" class="btn btn-outline-primary">План дня</a>
+    <a href="{% url 'care-location' %}" class="btn btn-outline-primary">Геолокация</a>
+    <a href="{% url 'care-wearables' %}" class="btn btn-outline-primary">Фитнес-браслет</a>
+    <a href="{% url 'care-places' %}" class="btn btn-outline-primary">Полезные места</a>
+    <a href="{% url 'ai-assistant' %}" class="btn btn-primary">Голосовой AI</a>
+</div>
+
 <div class="row g-4">
     <div class="col-xl-8">
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -91,6 +99,62 @@
         </div>
 
         <div class="j-card mb-4">
+            <div class="j-card-header">План на сегодня{% if focus_subject %} · {{ focus_subject.get_display_name }}{% endif %}</div>
+            <div class="j-card-body">
+                {% if focus_plan_summary.total %}
+                    <div class="small text-muted mb-2">Всего: {{ focus_plan_summary.total }} · Выполнено: {{ focus_plan_summary.completed }}</div>
+                    <div class="d-flex flex-column gap-2">
+                        {% for item in focus_plan_summary.items|slice:":4" %}
+                            <div class="border rounded-3 p-2 {% if item.is_completed %}bg-light{% endif %}">
+                                <div class="fw-semibold {% if item.is_completed %}text-decoration-line-through text-muted{% endif %}">{{ item.title }}</div>
+                                <div class="small text-muted">{{ item.time_label }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if focus_subject %}
+                        <a href="{% url 'care-plan-subject' focus_subject.id %}" class="btn btn-outline-primary btn-sm mt-3">Открыть план</a>
+                    {% endif %}
+                {% else %}
+                    <div class="text-muted">На сегодня задач пока нет.</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="j-card mb-4">
+            <div class="j-card-header">Последняя геоточка</div>
+            <div class="j-card-body">
+                {% if focus_last_location %}
+                    <div class="fw-semibold mb-1">{{ focus_last_location.latitude }}, {{ focus_last_location.longitude }}</div>
+                    <div class="small text-muted mb-2">{{ focus_last_location.captured_at|date:"d.m.Y H:i" }}</div>
+                    {% if focus_last_location.note %}
+                        <div class="small mb-3">{{ focus_last_location.note }}</div>
+                    {% endif %}
+                    {% if focus_subject %}
+                        <a href="{% url 'care-location-subject' focus_subject.id %}" class="btn btn-outline-primary btn-sm">История локации</a>
+                    {% endif %}
+                {% else %}
+                    <div class="text-muted">Геолокация ещё не передавалась.</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="j-card mb-4">
+            <div class="j-card-header">Фитнес-браслет</div>
+            <div class="j-card-body">
+                {% if focus_wearable_summary %}
+                    <div class="small text-muted mb-2">{{ focus_wearable_summary.device.nickname }} · {{ focus_wearable_summary.summary_date|date:"d.m.Y" }}</div>
+                    <div class="row g-2">
+                        <div class="col-4"><div class="small text-muted">Шаги</div><div class="fw-semibold">{{ focus_wearable_summary.steps }}</div></div>
+                        <div class="col-4"><div class="small text-muted">Пульс</div><div class="fw-semibold">{{ focus_wearable_summary.average_heart_rate|default:"—" }}</div></div>
+                        <div class="col-4"><div class="small text-muted">Сон</div><div class="fw-semibold">{{ focus_wearable_summary.sleep_hours|default:"—" }}</div></div>
+                    </div>
+                {% else %}
+                    <div class="text-muted">Сводок с браслета пока нет.</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="j-card mb-4">
             <div class="j-card-header">Погода и воздух</div>
             <div class="j-card-body">
                 {% if weather %}
@@ -111,6 +175,25 @@
                     {% endwith %}
                 {% else %}
                     <p class="text-muted mb-0">Погодный виджет появится после первого обновления из OpenWeatherMap.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="j-card mb-4">
+            <div class="j-card-header">Куда можно сходить</div>
+            <div class="j-card-body">
+                {% if featured_places %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for place in featured_places|slice:":3" %}
+                            <div class="border rounded-3 p-3">
+                                <div class="fw-semibold">{{ place.name }}</div>
+                                <div class="small text-muted">{{ place.category_label }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'care-places' %}" class="btn btn-outline-primary btn-sm mt-3">Вся подборка</a>
+                {% else %}
+                    <div class="text-muted">Подборка мест появится здесь.</div>
                 {% endif %}
             </div>
         </div>

@@ -1,5 +1,5 @@
-from pathlib import Path
 import environ
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -30,6 +30,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "apps.accounts",
+    "apps.care",
     "apps.family",
     "apps.health",
     "apps.weather",
@@ -134,6 +135,24 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "Asia/Almaty"
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_BEAT_SCHEDULE = {
+    "care-generate-recurring-plan-items": {
+        "task": "apps.care.tasks.generate_recurring_plan_items",
+        "schedule": 1800,
+    },
+    "care-send-task-reminders": {
+        "task": "apps.care.tasks.send_task_reminders",
+        "schedule": 60,
+    },
+    "care-check-location-absence": {
+        "task": "apps.care.tasks.check_location_absence",
+        "schedule": 1800,
+    },
+    "care-check-wearable-goals": {
+        "task": "apps.care.tasks.check_wearable_goals",
+        "schedule": 3600,
+    },
+}
 
 # ---------------------------------------------------------------------------
 # Email

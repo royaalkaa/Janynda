@@ -16,11 +16,12 @@ Janynda is a Django-based family health tracker for monitoring relatives' metric
 ## Apps
 
 - `accounts` — auth, onboarding, magic link login
+- `care` — daily plan, helpful places, location sharing, wearables
 - `family` — family group and relative management
 - `health` — metric records, thresholds, quick entry, history
 - `weather` — cached weather and AQI
 - `notifications` — notification center and settings
-- `ai_assistant` — cached health comments
+- `ai_assistant` — cached health comments and voice commands
 - `challenges` — family challenge models and list
 - `dashboard` — landing page plus observer/subject dashboards
 
@@ -68,6 +69,11 @@ python manage.py test
 - 4-step onboarding
 - Observer dashboard for family monitoring
 - Subject dashboard with HTMX quick entry
+- Daily plan with observer edits for elderly relatives
+- Voice assistant for plan queries, medications, doctor visits, and metric logging
+- Location sharing page and manual geolocation updates
+- Helpful places catalog including active longevity centers and clinics
+- Fitness band registry with daily summaries
 - Magic link flow for invited relatives
 - Health history screen
-- Notification center, weather page, and AI insight placeholder
+- Notification center, weather page, and AI insight layer

@@ -1,0 +1,166 @@
+{% extends base_template %}
+
+{% block title %}Статистика браслета · Janynda{% endblock %}
+{% block topbar_title %}Статистика браслета{% endblock %}
+{% block topbar_subtitle %}Средние значения, динамика и сравнение с рекомендованными нормами{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Статистика для {{ subject.get_display_name }}</h1>
+        <div class="text-muted">Периодический обзор активности и сна</div>
+    </div>
+    <div class="d-flex gap-2">
+        <div class="btn-group">
+            <a href="?period=week{% if subject_query %}&{{ subject_query }}{% endif %}" class="btn {% if period == 'week' %}btn-primary{% else %}btn-outline-primary{% endif %}">Неделя</a>
+            <a href="?period=month{% if subject_query %}&{{ subject_query }}{% endif %}" class="btn {% if period == 'month' %}btn-primary{% else %}btn-outline-primary{% endif %}">Месяц</a>
+        </div>
+        <a href="{% if subject != request.user %}{% url 'care-wearables-subject' subject.id %}{% else %}{% url 'care-wearables' %}{% endif %}" class="btn btn-outline-secondary">Назад</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="j-card h-100">
+            <div class="j-card-body">
+                <div class="small text-muted mb-1">Всего шагов</div>
+                <div class="display-6 fw-semibold">{{ aggregates.total_steps|default:"0" }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="j-card h-100 border-{{ steps_indicator }}">
+            <div class="j-card-body">
+                <div class="small text-muted mb-1">Норма шагов</div>
+                <div class="display-6 fw-semibold text-{{ steps_indicator }}">{{ latest_summary.steps|default:"—" }}</div>
+                <div class="small text-muted">Цель: {{ recommended_steps }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="j-card h-100 border-{{ sleep_indicator }}">
+            <div class="j-card-body">
+                <div class="small text-muted mb-1">Норма сна</div>
+                <div class="display-6 fw-semibold text-{{ sleep_indicator }}">{{ latest_summary.sleep_hours|default:"—" }}</div>
+                <div class="small text-muted">Цель: {{ recommended_sleep_hours }} ч</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="j-card h-100">
+            <div class="j-card-body">
+                <div class="small text-muted mb-1">Средний пульс</div>
+                <div class="display-6 fw-semibold">{{ aggregates.avg_heart_rate|floatformat:0|default:"—" }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="j-card mb-4">
+    <div class="j-card-header">Графики</div>
+    <div class="j-card-body">
+        <div class="row g-4">
+            <div class="col-lg-4"><canvas id="steps-chart" height="220"></canvas></div>
+            <div class="col-lg-4"><canvas id="heart-rate-chart" height="220"></canvas></div>
+            <div class="col-lg-4"><canvas id="sleep-chart" height="220"></canvas></div>
+        </div>
+    </div>
+</div>
+
+<div class="j-card">
+    <div class="j-card-header">Дневные показатели</div>
+    <div class="j-card-body">
+        {% if summaries %}
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Шаги</th>
+                            <th>Пульс</th>
+                            <th>Сон</th>
+                            <th>Качество</th>
+                            <th>Активные минуты</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for summary in summaries %}
+                            <tr>
+                                <td>{{ summary.summary_date|date:"d.m.Y" }}</td>
+                                <td>{{ summary.steps }}</td>
+                                <td>
+                                    {{ summary.average_heart_rate|default:"—" }}
+                                    {% if summary.heart_rate_min or summary.heart_rate_max %}
+                                        <div class="small text-muted">{{ summary.heart_rate_min|default:"—" }} / {{ summary.heart_rate_max|default:"—" }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ summary.sleep_hours|default:"—" }}
+                                    {% if summary.deep_sleep_hours or summary.light_sleep_hours %}
+                                        <div class="small text-muted">Глубокий: {{ summary.deep_sleep_hours|default:"—" }}, лёгкий: {{ summary.light_sleep_hours|default:"—" }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>{{ summary.get_sleep_quality_display|default:"—" }}</td>
+                                <td>{{ summary.active_minutes|default:"—" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            {% include "components/empty_state.html" with icon="bar-chart" title="Данных для статистики пока нет" text="Добавьте хотя бы одну сводку, чтобы построить графики." %}
+        {% endif %}
+    </div>
+</div>
+
+{{ chart_data|json_script:"wearables-chart-data" }}
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+    const dataNode = document.getElementById("wearables-chart-data");
+    if (!dataNode || !window.Chart) {
+        return;
+    }
+    const data = JSON.parse(dataNode.textContent || "{}");
+    const sharedOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+        },
+        scales: {
+            y: { beginAtZero: true },
+        },
+    };
+
+    new Chart(document.getElementById("steps-chart"), {
+        type: "line",
+        data: {
+            labels: data.labels,
+            datasets: [{ data: data.steps, borderColor: "#238636", backgroundColor: "rgba(35,134,54,0.12)", tension: 0.3, fill: true }],
+        },
+        options: sharedOptions,
+    });
+
+    new Chart(document.getElementById("heart-rate-chart"), {
+        type: "line",
+        data: {
+            labels: data.labels,
+            datasets: [{ data: data.heart_rate, borderColor: "#dc2626", backgroundColor: "rgba(220,38,38,0.12)", tension: 0.3, fill: true }],
+        },
+        options: sharedOptions,
+    });
+
+    new Chart(document.getElementById("sleep-chart"), {
+        type: "line",
+        data: {
+            labels: data.labels,
+            datasets: [{ data: data.sleep_hours, borderColor: "#2563eb", backgroundColor: "rgba(37,99,235,0.12)", tension: 0.3, fill: true }],
+        },
+        options: sharedOptions,
+    });
+})();
+</script>
+{% endblock %}

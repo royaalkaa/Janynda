@@ -9,6 +9,7 @@ urlpatterns = [
     path("onboarding/", include("apps.accounts.urls_onboarding")),
     path("dashboard/", include("apps.dashboard.urls")),
     path("family/", include("apps.family.urls")),
+    path("care/", include("apps.care.urls")),
     path("health/", include("apps.health.urls")),
     path("challenges/", include("apps.challenges.urls")),
     path("notifications/", include("apps.notifications.urls")),

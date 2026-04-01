@@ -8,12 +8,93 @@
     <p class="text-muted mb-0">Быстрый ввод ниже занимает меньше 30 секунд.</p>
 </div>
 
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{% url 'care-plan' %}" class="btn btn-outline-primary">План дня</a>
+    <a href="{% url 'care-location' %}" class="btn btn-outline-primary">Геолокация</a>
+    <a href="{% url 'care-wearables' %}" class="btn btn-outline-primary">Браслет</a>
+    <a href="{% url 'care-places' %}" class="btn btn-outline-primary">Куда сходить</a>
+    <a href="{% url 'ai-assistant' %}" class="btn btn-primary">Голосовой AI</a>
+</div>
+
 {% if ai_comment %}
     <div class="j-alert success mb-4">
         <i class="bi bi-stars"></i>
         <div>{{ ai_comment.content }}</div>
     </div>
 {% endif %}
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-5">
+        <div class="j-card h-100">
+            <div class="j-card-header">План на сегодня</div>
+            <div class="j-card-body">
+                {% if today_plan_summary.total %}
+                    <div class="small text-muted mb-2">Всего: {{ today_plan_summary.total }} · Выполнено: {{ today_plan_summary.completed }}</div>
+                    <div class="d-flex flex-column gap-2">
+                        {% for item in today_plan_summary.items|slice:":4" %}
+                            <div class="border rounded-3 p-2 {% if item.is_completed %}bg-light{% endif %}">
+                                <div class="fw-semibold {% if item.is_completed %}text-decoration-line-through text-muted{% endif %}">{{ item.title }}</div>
+                                <div class="small text-muted">{{ item.time_label }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">На сегодня задач пока нет.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="j-card h-100">
+                    <div class="j-card-header">Последняя геоточка</div>
+                    <div class="j-card-body">
+                        {% if last_location %}
+                            <div class="fw-semibold mb-1">{{ last_location.latitude }}, {{ last_location.longitude }}</div>
+                            <div class="small text-muted">{{ last_location.captured_at|date:"d.m.Y H:i" }}</div>
+                        {% else %}
+                            <p class="text-muted mb-0">Геолокация ещё не передавалась.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="j-card h-100">
+                    <div class="j-card-header">Браслет</div>
+                    <div class="j-card-body">
+                        {% if wearable_summary %}
+                            <div class="small text-muted mb-1">{{ wearable_summary.device.nickname }}</div>
+                            <div class="fw-semibold mb-1">{{ wearable_summary.steps }} шагов</div>
+                            <div class="small text-muted">Пульс: {{ wearable_summary.average_heart_rate|default:"—" }} · Сон: {{ wearable_summary.sleep_hours|default:"—" }}</div>
+                        {% else %}
+                            <p class="text-muted mb-0">Данные с браслета пока не подключены.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="j-card">
+                    <div class="j-card-header">Куда можно сходить</div>
+                    <div class="j-card-body">
+                        {% if featured_places %}
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for place in featured_places|slice:":3" %}
+                                    <div class="border rounded-3 px-3 py-2 bg-light">
+                                        <div class="fw-semibold small">{{ place.name }}</div>
+                                        <div class="small text-muted">{{ place.category_label }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">Подборка мест появится здесь.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="row g-3 mb-4">
     <div class="col-md-4">

@@ -37,6 +37,18 @@
             <a href="{% url 'family-overview' %}" class="j-nav-link {% if request.path == '/family/' %}active{% endif %}">
                 <i class="bi bi-people"></i> Семья
             </a>
+            <a href="{% url 'care-plan' %}" class="j-nav-link {% if '/care/plan/' in request.path %}active{% endif %}">
+                <i class="bi bi-calendar-check"></i> План дня
+            </a>
+            <a href="{% url 'care-location' %}" class="j-nav-link {% if '/care/location/' in request.path %}active{% endif %}">
+                <i class="bi bi-geo-alt"></i> Геолокация
+            </a>
+            <a href="{% url 'care-wearables' %}" class="j-nav-link {% if '/care/wearables/' in request.path %}active{% endif %}">
+                <i class="bi bi-smartwatch"></i> Браслет
+            </a>
+            <a href="{% url 'care-places' %}" class="j-nav-link {% if '/care/places/' in request.path %}active{% endif %}">
+                <i class="bi bi-pin-map"></i> Полезные места
+            </a>
             <a href="{% url 'challenge-list' %}" class="j-nav-link {% if request.path == '/challenges/' %}active{% endif %}">
                 <i class="bi bi-trophy"></i> Челленджи
             </a>

@@ -1,0 +1,167 @@
+{% extends base_template %}
+
+{% block title %}Фитнес-браслет · Janynda{% endblock %}
+{% block topbar_title %}Фитнес-браслет{% endblock %}
+{% block topbar_subtitle %}Подключение устройства и ежедневные сводки по активности{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Браслеты {{ subject.get_display_name }}</h1>
+        <div class="text-muted">Можно хранить ручную синхронизацию до подключения реального API провайдера.</div>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        {% if subject_choices %}
+            {% for candidate in subject_choices %}
+                <a href="{% url 'care-wearables-subject' candidate.id %}" class="btn {% if candidate == subject %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                    {{ candidate.get_display_name }}
+                </a>
+            {% endfor %}
+        {% endif %}
+        <a href="{% url 'wearables_stats' %}{% if subject != request.user %}?subject_id={{ subject.id }}{% endif %}" class="btn btn-outline-secondary">Статистика</a>
+    </div>
+</div>
+
+{% if latest_summary %}
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="j-card">
+                <div class="j-card-body">
+                    <div class="small text-muted mb-1">Шаги</div>
+                    <div class="display-6 fw-semibold">{{ latest_summary.steps }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="j-card">
+                <div class="j-card-body">
+                    <div class="small text-muted mb-1">Средний пульс</div>
+                    <div class="display-6 fw-semibold">{{ latest_summary.average_heart_rate|default:"—" }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="j-card">
+                <div class="j-card-body">
+                    <div class="small text-muted mb-1">Макс / мин</div>
+                    <div class="display-6 fw-semibold">{{ latest_summary.heart_rate_max|default:"—" }} / {{ latest_summary.heart_rate_min|default:"—" }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="j-card">
+                <div class="j-card-body">
+                    <div class="small text-muted mb-1">Сон</div>
+                    <div class="display-6 fw-semibold">{{ latest_summary.sleep_hours|default:"—" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<div class="row g-4">
+    <div class="col-xl-4">
+        <div class="j-card mb-4">
+            <div class="j-card-header">Подключить устройство</div>
+            <div class="j-card-body">
+                <form method="post" class="d-grid gap-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="device">
+                    {% for field in device_form %}
+                        <div>
+                            {% if field.field.widget.input_type == "checkbox" %}
+                                <div class="form-check">
+                                    {{ field }}
+                                    <label class="form-check-label">{{ field.label }}</label>
+                                </div>
+                            {% else %}
+                                <label class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                            {% endif %}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">{{ field.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button class="btn btn-primary">Добавить браслет</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="j-card">
+            <div class="j-card-header">Занести сводку</div>
+            <div class="j-card-body">
+                {% if devices %}
+                    <form method="post" class="d-grid gap-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="summary">
+                        {% for field in summary_form %}
+                            <div>
+                                <label class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-danger small mt-1">{{ field.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <button class="btn btn-outline-primary">Сохранить сводку</button>
+                    </form>
+                {% else %}
+                    <div class="text-muted">Сначала подключите хотя бы один браслет.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-8">
+        <div class="j-card">
+            <div class="j-card-header">Подключённые устройства</div>
+            <div class="j-card-body">
+                {% if devices %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for device in devices %}
+                            <div class="border rounded-3 p-3">
+                                <div class="d-flex justify-content-between gap-3 mb-2">
+                                    <div>
+                                        <div class="fw-semibold">{{ device.nickname }}</div>
+                                        <div class="small text-muted">{{ device.get_provider_display }}</div>
+                                    </div>
+                                    {% if device.is_active %}
+                                        <span class="badge text-bg-success">Активен</span>
+                                    {% else %}
+                                        <span class="badge text-bg-secondary">Неактивен</span>
+                                    {% endif %}
+                                </div>
+                                <div class="small text-muted mb-2">
+                                    Последняя синхронизация:
+                                    {% if device.last_synced_at %}
+                                        {{ device.last_synced_at|date:"d.m.Y H:i" }}
+                                    {% else %}
+                                        пока не было
+                                    {% endif %}
+                                </div>
+                                {% with latest=device.daily_summaries.first %}
+                                    {% if latest %}
+                                        <div class="row g-3">
+                                            <div class="col-md-3"><div class="small text-muted">Шаги</div><div class="fw-semibold">{{ latest.steps }}</div></div>
+                                            <div class="col-md-3"><div class="small text-muted">Пульс</div><div class="fw-semibold">{{ latest.average_heart_rate|default:"—" }}</div></div>
+                                            <div class="col-md-3"><div class="small text-muted">Макс / мин</div><div class="fw-semibold">{{ latest.heart_rate_max|default:"—" }} / {{ latest.heart_rate_min|default:"—" }}</div></div>
+                                            <div class="col-md-3"><div class="small text-muted">Активные минуты</div><div class="fw-semibold">{{ latest.active_minutes|default:"—" }}</div></div>
+                                            <div class="col-md-3"><div class="small text-muted">Сон</div><div class="fw-semibold">{{ latest.sleep_hours|default:"—" }}</div></div>
+                                            <div class="col-md-3"><div class="small text-muted">Глубокий сон</div><div class="fw-semibold">{{ latest.deep_sleep_hours|default:"—" }}</div></div>
+                                            <div class="col-md-3"><div class="small text-muted">Лёгкий сон</div><div class="fw-semibold">{{ latest.light_sleep_hours|default:"—" }}</div></div>
+                                            <div class="col-md-3"><div class="small text-muted">Качество сна</div><div class="fw-semibold">{{ latest.get_sleep_quality_display|default:"—" }}</div></div>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {% include "components/empty_state.html" with icon="smartwatch" title="Браслеты пока не подключены" text="Добавьте устройство и начните хранить сводки по шагам, пульсу и сну." %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
