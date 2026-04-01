@@ -194,6 +194,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # ---------------------------------------------------------------------------
 OPENWEATHER_API_KEY = env("OPENWEATHER_API_KEY", default="")
 OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
+OPENAI_CHAT_MODEL = env("OPENAI_CHAT_MODEL", default="gpt-4o-mini")
 
 # ---------------------------------------------------------------------------
 # App settings

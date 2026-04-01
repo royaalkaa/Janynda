@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.http import JsonResponse
@@ -8,7 +9,11 @@ from apps.care.services import get_accessible_subject, get_base_template, get_re
 from apps.dashboard.services import get_latest_comment_for_subject
 
 from .models import VoiceCommandLog
-from .services import handle_voice_command
+from .services import (
+    VOICE_ASSISTANT_EXAMPLE_GROUPS,
+    VOICE_ASSISTANT_KNOWLEDGE_TOPICS,
+    handle_voice_command,
+)
 
 @login_required
 def ai_assistant_view(request):
@@ -36,6 +41,10 @@ def ai_assistant_view(request):
                 ).order_by("created_at")
             ],
             "subject_choices": get_related_subjects(request.user),
+            "voice_example_groups": VOICE_ASSISTANT_EXAMPLE_GROUPS,
+            "health_topics": VOICE_ASSISTANT_KNOWLEDGE_TOPICS,
+            "ai_health_enabled": bool(settings.OPENAI_API_KEY),
+            "ai_model_label": settings.OPENAI_CHAT_MODEL,
         },
     )
 

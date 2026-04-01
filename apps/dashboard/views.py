@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 
 from apps.care.services import (
     get_featured_places,
+    get_base_template,
     get_last_location_ping,
     get_latest_wearable_summary,
     get_plan_summary,
@@ -84,6 +85,7 @@ def subject_dashboard_view(request):
         request,
         "dashboard/subject_dashboard.html",
         {
+            "base_template": get_base_template(request.user, request.user),
             "latest_metrics": latest_metrics,
             "blood_pressure_form": BloodPressureEntryForm(),
             "heart_rate_form": HeartRateEntryForm(),

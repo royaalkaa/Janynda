@@ -1,11 +1,13 @@
 from datetime import timedelta
 
+from django.core.management import call_command
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
 from apps.accounts.services import attach_subject_to_observer
+from apps.family.models import FamilyMembership
 from apps.notifications.models import Notification
 
 from .models import (
@@ -318,3 +320,19 @@ class PlacesAndWearablesTests(TestCase):
         notifications_count = check_wearable_goals(self.subject.id)
         self.assertGreaterEqual(notifications_count, 1)
         self.assertTrue(Notification.objects.filter(related_subject=self.subject).exists())
+
+
+class DemoSeedCommandTests(TestCase):
+    def test_seed_demo_data_creates_rich_dataset(self):
+        call_command("seed_demo_data", "--reset")
+
+        observer = User.objects.get(email="observer@janynda.local")
+        mother = User.objects.get(email="mother@janynda.local")
+
+        self.assertTrue(User.objects.filter(email="admin@janynda.local", is_superuser=True).exists())
+        self.assertTrue(FamilyMembership.objects.filter(observer=observer, subject=mother).exists())
+        self.assertGreaterEqual(CommunityPlace.objects.count(), 8)
+        self.assertGreaterEqual(mother.metric_records.count(), 30)
+        self.assertGreaterEqual(mother.daily_plan_items.count(), 6)
+        self.assertTrue(mother.wearable_devices.exists())
+        self.assertTrue(Notification.objects.filter(related_subject=mother).exists())

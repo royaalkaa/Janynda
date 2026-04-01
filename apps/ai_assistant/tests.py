@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -148,3 +148,57 @@ class VoiceAssistantCommandTests(TestCase):
             {"subject_id": self.subject.id, "transcript": "Сколько воды я выпил сегодня?"},
         )
         self.assertIn("250 мл", water_response.json()["response"])
+
+    def test_pressure_assessment_returns_answer_without_creating_metric(self):
+        response = self.client.post(
+            reverse("ai-voice-command"),
+            {"subject_id": self.subject.id, "transcript": "Давление 126 на 82 это нормально?"},
+        )
+
+        payload = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(payload["requires_confirmation"])
+        self.assertIn("126/82", payload["response"])
+        self.assertFalse(
+            MetricRecord.objects.filter(
+                subject=self.subject,
+                metric_type=MetricType.BLOOD_PRESSURE,
+            ).exists()
+        )
+
+    def test_mixed_medication_and_pressure_question_prioritizes_health_answer(self):
+        DailyPlanItem.objects.create(
+            subject=self.subject,
+            created_by=self.subject,
+            title="Утренние таблетки",
+            scheduled_date=timezone.localdate(),
+            category=DailyPlanItem.Category.MEDICATION,
+        )
+
+        response = self.client.post(
+            reverse("ai-voice-command"),
+            {
+                "subject_id": self.subject.id,
+                "transcript": "Я выпил лекарство кардиомагнил и стало 90 на 50 это норма?",
+            },
+        )
+
+        payload = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(payload["requires_confirmation"])
+        self.assertIn("90/50", payload["response"])
+        self.assertFalse(
+            DailyPlanItem.objects.get(subject=self.subject, title="Утренние таблетки").is_completed
+        )
+
+    @override_settings(OPENAI_API_KEY="")
+    def test_local_health_fallback_answers_sleep_question(self):
+        response = self.client.post(
+            reverse("ai-voice-command"),
+            {"subject_id": self.subject.id, "transcript": "Как улучшить сон?"},
+        )
+
+        payload = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(payload["requires_confirmation"])
+        self.assertIn("сну", payload["response"].lower())

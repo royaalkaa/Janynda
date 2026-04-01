@@ -8,7 +8,12 @@
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
         <h1 class="h3 mb-1">Голосовой помощник для {{ subject.get_display_name }}</h1>
-        <div class="text-muted">Можно спросить про план, отметить лекарства или зафиксировать давление голосом.</div>
+        <div class="text-muted">
+            Можно спросить про план, лекарства, врача, воду, сон, шаги и базовые вопросы о самочувствии.
+            {% if ai_health_enabled %}
+                Свободные health-вопросы дополнительно идут через {{ ai_model_label }}.
+            {% endif %}
+        </div>
     </div>
     <div class="d-flex flex-wrap gap-2">
         {% if subject_choices %}
@@ -48,7 +53,7 @@
                 <form id="voice-command-form" class="d-grid gap-3">
                     {% csrf_token %}
                     <input type="hidden" name="subject_id" value="{{ subject.id }}">
-                    <textarea name="transcript" id="voice-transcript" class="form-control" rows="4" placeholder="Например: я выпил лекарство кардиомагнил, что у меня сегодня по плану, давление 120/80"></textarea>
+                    <textarea name="transcript" id="voice-transcript" class="form-control" rows="4" placeholder="Например: я выпил лекарство кардиомагнил, что у меня сегодня по плану, давление 150 на 95 это нормально?"></textarea>
                     <div class="d-flex flex-wrap gap-2">
                         <button type="button" id="voice-listen-btn" class="btn btn-primary btn-lg">
                             <i class="bi bi-mic-fill"></i> Начать голосовой ввод
@@ -73,19 +78,38 @@
 
     <div class="col-xl-5">
         <div class="j-card mb-4">
-            <div class="j-card-header">Что можно сказать</div>
+            <div class="j-card-header">Примеры запросов</div>
+            <div class="j-card-body">
+                <div class="d-flex flex-column gap-3">
+                    {% for group in voice_example_groups %}
+                        <div>
+                            <div class="small text-uppercase text-muted fw-semibold mb-2">{{ group.title }}</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for example in group.examples %}
+                                    <button type="button" class="btn btn-outline-secondary btn-sm text-start" data-example-text="{{ example }}">
+                                        {{ example }}
+                                    </button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="j-card mb-4">
+            <div class="j-card-header">О чём помощник знает</div>
             <div class="j-card-body">
                 <div class="d-flex flex-column gap-2 small">
-                    <div>“Что у меня сегодня по плану?”</div>
-                    <div>“Какое лекарство сейчас принимать?”</div>
-                    <div>“Когда к врачу?”</div>
-                    <div>“Сколько воды я выпил сегодня?”</div>
-                    <div>“Я выпил лекарство кардиомагнил”</div>
-                    <div>“Я был у врача”</div>
-                    <div>“Давление 120/80”</div>
-                    <div>“Пульс 72”</div>
-                    <div>“Шаги 6400”</div>
-                    <div>“Отмена”</div>
+                    {% for item in health_topics %}
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-circle text-primary"></i>
+                            <span>{{ item }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="small text-muted mt-3">
+                    Помощник не ставит диагноз и не меняет лечение, но помогает быстро понять план, зафиксировать события и отреагировать на тревожные показатели.
                 </div>
             </div>
         </div>
@@ -125,6 +149,7 @@
     const responseText = document.getElementById("voice-response-text");
     const confirmationActions = document.getElementById("voice-confirmation-actions");
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const exampleButtons = document.querySelectorAll("[data-example-text]");
     let pendingConfirmationId = null;
 
     const speak = (text) => {
@@ -165,6 +190,13 @@
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
         await submitPayload();
+    });
+
+    exampleButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            transcriptField.value = button.getAttribute("data-example-text") || "";
+            transcriptField.focus();
+        });
     });
 
     confirmationActions?.querySelectorAll("[data-confirm]").forEach((button) => {

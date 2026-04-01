@@ -3,6 +3,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 
 from apps.accounts.models import User
+from apps.care.services import get_base_template
 from apps.family.models import FamilyMembership
 
 from .forms import METRIC_FORM_MAP
@@ -73,7 +74,6 @@ def metric_history_view(request, subject_id=None):
         records = records.filter(metric_type=metric_type)
     records = records.order_by("-recorded_at")[:50]
 
-    base_template = "base/subject.html" if subject == request.user and request.user.is_subject else "base/observer.html"
     return render(
         request,
         "health/history.html",
@@ -82,6 +82,6 @@ def metric_history_view(request, subject_id=None):
             "records": records,
             "selected_metric_type": metric_type,
             "metric_choices": MetricType.choices,
-            "base_template": base_template,
+            "base_template": get_base_template(request.user, subject),
         },
     )

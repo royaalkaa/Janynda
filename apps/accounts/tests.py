@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.urls import reverse
 
 from apps.accounts.services import attach_subject_to_observer
 from apps.notifications.models import NotificationSettings
@@ -19,6 +20,29 @@ class UserLifecycleTests(TestCase):
         self.assertTrue(hasattr(user, "profile"))
         self.assertTrue(hasattr(user, "notification_settings"))
         self.assertIsInstance(user.notification_settings, NotificationSettings)
+
+    def test_signup_with_duplicate_email_shows_form_error(self):
+        User.objects.create_user(
+            username="existing-user",
+            email="admin@admin.kz",
+            password="pass12345",
+        )
+
+        response = self.client.post(
+            reverse("signup"),
+            {
+                "email": "admin@admin.kz",
+                "first_name": "Admin",
+                "last_name": "Admin",
+                "phone": "+7 777 777 77 77",
+                "role": User.Role.BOTH,
+                "password1": "123456qwertyD",
+                "password2": "123456qwertyD",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Пользователь с таким email уже существует.")
 
 
 class AttachSubjectServiceTests(TestCase):
