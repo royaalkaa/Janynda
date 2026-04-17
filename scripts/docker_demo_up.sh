@@ -4,6 +4,30 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+ensure_env_file() {
+  if [[ -f "$ROOT_DIR/.env" || ! -f "$ROOT_DIR/.env.example" ]]; then
+    return 0
+  fi
+
+  cp "$ROOT_DIR/.env.example" "$ROOT_DIR/.env"
+  echo "Created .env from .env.example"
+}
+
+pick_compose_cmd() {
+  if docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD=(docker compose)
+    return 0
+  fi
+
+  if command -v docker-compose >/dev/null 2>&1; then
+    COMPOSE_CMD=(docker-compose)
+    return 0
+  fi
+
+  echo "Docker Compose is not installed."
+  exit 1
+}
+
 if ! command -v docker >/dev/null 2>&1; then
   echo "Docker is not installed."
   exit 1
@@ -42,30 +66,35 @@ wait_for_web() {
   local sleep_seconds=2
 
   for ((i=1; i<=attempts; i++)); do
-    if docker compose exec -T web python manage.py check >/dev/null 2>&1; then
+    if "${COMPOSE_CMD[@]}" exec -T web python manage.py check >/dev/null 2>&1; then
       return 0
     fi
     sleep "$sleep_seconds"
   done
 
   echo "Web container did not become ready in time."
-  docker compose ps || true
+  "${COMPOSE_CMD[@]}" ps || true
   exit 1
 }
 
+pick_compose_cmd
+ensure_env_file
 ensure_docker_running "$@"
 
 echo "Building and starting Docker services..."
-docker compose up -d --build
+"${COMPOSE_CMD[@]}" up -d --build
 
 echo "Waiting for Django container..."
 wait_for_web
 
 echo "Applying migrations..."
-docker compose exec -T web python manage.py migrate
+"${COMPOSE_CMD[@]}" exec -T web python manage.py migrate
 
 echo "Loading demo data..."
-docker compose exec -T web python manage.py seed_demo_data --reset
+"${COMPOSE_CMD[@]}" exec -T web python manage.py seed_demo_data --reset
+
+APP_PORT="${APP_PORT:-8000}"
+APP_URL_HOST="${APP_URL_HOST:-127.0.0.1}"
 
 echo ""
 echo "Demo accounts:"
@@ -75,8 +104,8 @@ echo "  daughter@janynda.local / demo12345"
 echo "  mother@janynda.local / demo12345"
 echo "  father@janynda.local / demo12345"
 echo ""
-echo "App:   http://127.0.0.1:8000"
-echo "Admin: http://127.0.0.1:8000/admin/"
+echo "App:   http://$APP_URL_HOST:$APP_PORT"
+echo "Admin: http://$APP_URL_HOST:$APP_PORT/admin/"
 echo ""
 echo "Container status:"
-docker compose ps
+"${COMPOSE_CMD[@]}" ps

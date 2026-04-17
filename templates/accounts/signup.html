@@ -1,6 +1,7 @@
 {% extends "base/base.html" %}
+{% load i18n %}
 
-{% block title %}Регистрация · Janynda{% endblock %}
+{% block title %}{% trans "Регистрация" %} · Janynda{% endblock %}
 
 {% block layout %}
 <div class="container py-5">
@@ -9,8 +10,8 @@
             <div class="j-onboarding-card">
                 <div class="text-center mb-4">
                     <div class="brand text-primary fw-bold fs-3 mb-2">Janynda</div>
-                    <h1 class="h3 mb-1">Создание аккаунта</h1>
-                    <p class="text-muted mb-0">После регистрации сразу перейдём в onboarding.</p>
+                    <h1 class="h3 mb-1">{% trans "Создание аккаунта" %}</h1>
+                    <p class="text-muted mb-0">{% trans "После регистрации сразу перейдём в onboarding." %}</p>
                 </div>
                 <form method="post" class="d-grid gap-3">
                     {% csrf_token %}
@@ -26,10 +27,10 @@
                             {% endif %}
                         </div>
                     {% endfor %}
-                    <button type="submit" class="btn btn-primary btn-lg">Создать аккаунт</button>
+                    <button type="submit" class="btn btn-primary btn-lg">{% trans "Создать аккаунт" %}</button>
                 </form>
                 <p class="text-muted text-center mt-4 mb-0">
-                    Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a>
+                    {% trans "Уже есть аккаунт?" %} <a href="{% url 'login' %}">{% trans "Войти" %}</a>
                 </p>
             </div>
         </div>

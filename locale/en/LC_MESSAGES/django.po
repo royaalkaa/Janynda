@@ -1,0 +1,572 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-03 14:28+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/accounts/login.html:4 templates/accounts/login.html:13
+msgid "Вход"
+msgstr "Entrance"
+
+#: templates/accounts/login.html:14
+msgid "Войдите по email, чтобы открыть дашборд семьи."
+msgstr "Log in with your email to open your family dashboard."
+
+#: templates/accounts/login.html:27 templates/accounts/signup.html:33
+#: templates/dashboard/landing.html:20
+msgid "Войти"
+msgstr "Login"
+
+#: templates/accounts/login.html:30
+msgid "Нет аккаунта?"
+msgstr "Don't have an account?"
+
+#: templates/accounts/login.html:30
+msgid "Создать"
+msgstr "Create"
+
+#: templates/accounts/signup.html:4
+msgid "Регистрация"
+msgstr "Registration"
+
+#: templates/accounts/signup.html:13
+msgid "Создание аккаунта"
+msgstr "Account creation"
+
+#: templates/accounts/signup.html:14
+msgid "После регистрации сразу перейдём в onboarding."
+msgstr "After registration, we will immediately go to onboarding."
+
+#: templates/accounts/signup.html:30 templates/dashboard/landing.html:19
+msgid "Создать аккаунт"
+msgstr "Create an account"
+
+#: templates/accounts/signup.html:33
+msgid "Уже есть аккаунт?"
+msgstr "Already have an account?"
+
+#: templates/base/base.html:45
+msgid "Вызов помощи"
+msgstr "Call for help"
+
+#: templates/base/base.html:51
+msgid "Вам нужна помощь?"
+msgstr "Do you need help?"
+
+#: templates/base/base.html:52
+msgid ""
+"Уведомление будет отправлено вашим наблюдателям и контакту экстренной "
+"помощи."
+msgstr ""
+"A notification will be sent to your supervisors and emergency contact."
+
+#: templates/base/base.html:56
+msgid "Отмена"
+msgstr "Cancel"
+
+#: templates/base/base.html:63
+msgid "Отправить SOS"
+msgstr "Send SOS"
+
+#: templates/base/base.html:71
+msgid "Настройки доступности"
+msgstr "Accessibility Settings"
+
+#: templates/base/base.html:74
+msgid "Панель доступности"
+msgstr "Accessibility panel"
+
+#: templates/base/base.html:75
+msgid "Размер текста"
+msgstr "Text size"
+
+#: templates/base/base.html:77
+msgid "Обычный"
+msgstr "Ordinary"
+
+#: templates/base/base.html:78
+msgid "Большой"
+msgstr "Big"
+
+#: templates/base/base.html:79
+msgid "Очень большой"
+msgstr "Very big"
+
+#: templates/base/base.html:81
+msgid "Контраст"
+msgstr "Contrast"
+
+#: templates/base/base.html:84
+msgid "Высокий контраст"
+msgstr "High contrast"
+
+#: templates/base/observer.html:25
+msgid "Наблюдающий режим"
+msgstr "Observer mode"
+
+#: templates/base/observer.html:29
+msgid "Основное"
+msgstr "Basics"
+
+#: templates/base/observer.html:31
+msgid "Дашборд"
+msgstr "Dashboard"
+
+#: templates/base/observer.html:35
+msgid "Мой режим"
+msgstr "My regime"
+
+#: templates/base/observer.html:39
+msgid "Семья"
+msgstr "Family"
+
+#: templates/base/observer.html:42
+msgid "Челленджи"
+msgstr "Challenges"
+
+#: templates/base/observer.html:44
+msgid "Сервисы"
+msgstr "Services"
+
+#: templates/base/observer.html:46 templates/notifications/list.html:4
+#: templates/notifications/list.html:5
+msgid "Уведомления"
+msgstr "Notifications"
+
+#: templates/base/observer.html:52
+msgid "Погода"
+msgstr "Weather"
+
+#: templates/base/observer.html:55
+msgid "AI-помощник"
+msgstr "AI assistant"
+
+#: templates/base/observer.html:58 templates/base/subject.html:41
+#: templates/payment/index.html:4 templates/payment/index.html:5
+msgid "Оплата"
+msgstr "Payment"
+
+#: templates/base/observer.html:62
+msgid "Язык"
+msgstr "Language"
+
+#: templates/base/observer.html:77 templates/base/subject.html:24
+msgid "Выйти"
+msgstr "Log out"
+
+#: templates/base/observer.html:85
+#: templates/dashboard/observer_dashboard.html:4
+#: templates/dashboard/observer_dashboard.html:5
+msgid "Панель наблюдения"
+msgstr "Observation panel"
+
+#: templates/base/observer.html:86
+msgid "Семья, алерты и ключевые метрики в одном месте"
+msgstr "Family, alerts and key metrics in one place"
+
+#: templates/base/subject.html:33
+msgid "Главная"
+msgstr "Home"
+
+#: templates/base/subject.html:37
+#: templates/dashboard/observer_dashboard.html:64
+msgid "История"
+msgstr "Story"
+
+#: templates/dashboard/landing.html:11
+msgid "Следите за здоровьем близких без перегруза интерфейсом"
+msgstr ""
+"Monitor the health of your loved ones without overloading the interface"
+
+#: templates/dashboard/landing.html:13
+msgid ""
+"Janynda помогает семье видеть давление, пульс, шаги, погодные риски и "
+"быстрые AI-комментарии в одном белом, понятном дашборде."
+msgstr ""
+"Janynda helps families see blood pressure, heart rate, steps, weather risks "
+"and quick AI comments in one white, clear dashboard."
+
+#: templates/dashboard/landing.html:17
+msgid "Открыть дашборд"
+msgstr "Open dashboard"
+
+#: templates/dashboard/landing.html:28
+#: templates/dashboard/subject_dashboard.html:19
+msgid "Давление"
+msgstr "Pressure"
+
+#: templates/dashboard/landing.html:28
+msgid "Последняя запись 20 минут назад"
+msgstr "Last post 20 minutes ago"
+
+#: templates/dashboard/landing.html:32
+#: templates/dashboard/subject_dashboard.html:20
+#: templates/dashboard/subject_dashboard.html:71
+msgid "Пульс"
+msgstr "Pulse"
+
+#: templates/dashboard/landing.html:32
+msgid "Требуется наблюдение"
+msgstr "Observation required"
+
+#: templates/dashboard/landing.html:36
+#: templates/dashboard/subject_dashboard.html:21
+msgid "Шаги"
+msgstr "Steps"
+
+#: templates/dashboard/landing.html:36
+msgid "До цели осталось 1 160"
+msgstr "1,160 left to reach goal"
+
+#: templates/dashboard/landing.html:36
+msgid "сегодня"
+msgstr "Today"
+
+#: templates/dashboard/landing.html:40
+msgid "Воздух"
+msgstr "Air"
+
+#: templates/dashboard/landing.html:40
+msgid "Лучше перенести прогулку"
+msgstr "Better reschedule your walk"
+
+#: templates/dashboard/observer_dashboard.html:6
+msgid "Семья, статусы и первые сигналы риска"
+msgstr "Family, statuses and first signs of risk"
+
+#: templates/dashboard/observer_dashboard.html:13
+msgid "Состояние семьи"
+msgstr "Family status"
+
+#: templates/dashboard/observer_dashboard.html:14
+msgid "Карточки показывают последний статус по каждому близкому."
+msgstr "Cards show the latest status for each loved one."
+
+#: templates/dashboard/observer_dashboard.html:16
+#: templates/dashboard/observer_dashboard.html:77
+msgid "Добавить родственника"
+msgstr "Add a relative"
+
+#: templates/dashboard/observer_dashboard.html:34
+msgid "Последняя запись:"
+msgstr "Latest entry:"
+
+#: templates/dashboard/observer_dashboard.html:36
+msgid "Пока нет записей"
+msgstr "No entries yet"
+
+#: templates/dashboard/observer_dashboard.html:41
+#: templates/health/history.html:43
+msgid "Критично"
+msgstr "Critical"
+
+#: templates/dashboard/observer_dashboard.html:41
+#: templates/health/history.html:43
+msgid "Внимание"
+msgstr "Attention"
+
+#: templates/dashboard/observer_dashboard.html:41
+#: templates/health/history.html:43
+msgid "Норма"
+msgstr "Norm"
+
+#: templates/dashboard/observer_dashboard.html:41
+msgid "Нет данных"
+msgstr "No data"
+
+#: templates/dashboard/observer_dashboard.html:56
+msgid "Попросите родственника внести первые показатели через magic link."
+msgstr "Ask your relative to enter the first indicators via magic link."
+
+#: templates/dashboard/observer_dashboard.html:67
+msgid "Magic link активен"
+msgstr "Magic link active"
+
+#: templates/dashboard/observer_dashboard.html:75
+msgid "Семья пока не собрана"
+msgstr "The family has not yet been gathered"
+
+#: templates/dashboard/observer_dashboard.html:76
+msgid ""
+"Добавьте первого родственника, чтобы увидеть его карточку, magic link и "
+"статусы на дашборде."
+msgstr ""
+"Add your first relative to see his card, magic link and statuses on the "
+"dashboard."
+
+#: templates/dashboard/observer_dashboard.html:84
+msgid "AI-комментарий"
+msgstr "AI comment"
+
+#: templates/dashboard/observer_dashboard.html:92
+msgid "Комментарий появится после первой записи метрик."
+msgstr "The comment will appear after the first metrics entry."
+
+#: templates/dashboard/observer_dashboard.html:98
+msgid "Погода и воздух"
+msgstr "Weather and air"
+
+#: templates/dashboard/observer_dashboard.html:117
+msgid "Погодный виджет появится после первого обновления из OpenWeatherMap."
+msgstr ""
+"The weather widget will appear after the first update from OpenWeatherMap."
+
+#: templates/dashboard/observer_dashboard.html:123
+msgid "Активные челленджи"
+msgstr "Active challenges"
+
+#: templates/dashboard/observer_dashboard.html:130
+msgid "Семейный челлендж по активности"
+msgstr "Family activity challenge"
+
+#: templates/dashboard/observer_dashboard.html:134
+msgid "До конца:"
+msgstr "Until the end:"
+
+#: templates/dashboard/observer_dashboard.html:134
+msgid "дн."
+msgstr "days"
+
+#: templates/dashboard/observer_dashboard.html:139
+msgid "Челленджи пока не созданы."
+msgstr "Challenges have not yet been created."
+
+#: templates/dashboard/subject_dashboard.html:4
+msgid "Мои показатели"
+msgstr "My indicators"
+
+#: templates/dashboard/subject_dashboard.html:8
+msgid "Здравствуйте"
+msgstr "Hello"
+
+#: templates/dashboard/subject_dashboard.html:9
+msgid "Быстрый ввод ниже занимает меньше 30 секунд."
+msgstr "The quick entry below takes less than 30 seconds."
+
+#: templates/dashboard/subject_dashboard.html:22
+msgid "Ещё не вводили"
+msgstr "Not entered yet"
+
+#: templates/dashboard/subject_dashboard.html:57
+msgid "Быстрый ввод давления"
+msgstr "Quick pressure input"
+
+#: templates/dashboard/subject_dashboard.html:63
+msgid "Систолическое"
+msgstr "Systolic"
+
+#: templates/dashboard/subject_dashboard.html:67
+msgid "Диастолическое"
+msgstr "Diastolic"
+
+#: templates/dashboard/subject_dashboard.html:74
+msgid "Сохранить давление"
+msgstr "Save pressure"
+
+#: templates/dashboard/subject_dashboard.html:81
+msgid "Быстрый ввод шагов"
+msgstr "Quickly enter steps"
+
+#: templates/dashboard/subject_dashboard.html:87
+msgid "Шагов за день"
+msgstr "Steps per day"
+
+#: templates/dashboard/subject_dashboard.html:90
+msgid "Сохранить шаги"
+msgstr "Save steps"
+
+#: templates/dashboard/subject_dashboard.html:99
+msgid "Быстрый ввод пульса"
+msgstr "Quick heart rate entry"
+
+#: templates/dashboard/subject_dashboard.html:105
+msgid "Ударов в минуту"
+msgstr "Beats per minute"
+
+#: templates/dashboard/subject_dashboard.html:108
+msgid "Сохранить пульс"
+msgstr "Save Pulse"
+
+#: templates/dashboard/subject_dashboard.html:115
+msgid "Мои наблюдатели"
+msgstr "My observers"
+
+#: templates/dashboard/subject_dashboard.html:122
+msgid "Видит ваши показатели и уведомления по рискам."
+msgstr "Sees your indicators and risk notifications."
+
+#: templates/dashboard/subject_dashboard.html:127
+msgid "Пока никто не подключён как наблюдатель."
+msgstr "No one is connected as an observer yet."
+
+#: templates/dashboard/subject_dashboard.html:137
+msgid "Шаги за 7 дней"
+msgstr "Steps in 7 days"
+
+#: templates/dashboard/subject_dashboard.html:147
+msgid "Давление за последние записи"
+msgstr "Pressure for last records"
+
+#: templates/health/history.html:4 templates/health/history.html:9
+msgid "История метрик"
+msgstr "History of metrics"
+
+#: templates/health/history.html:14
+msgid "Все метрики"
+msgstr "All metrics"
+
+#: templates/health/history.html:19
+msgid "Фильтр"
+msgstr "Filter"
+
+#: templates/health/history.html:30
+msgid "Метрика"
+msgstr "Metrics"
+
+#: templates/health/history.html:31
+msgid "Значение"
+msgstr "Meaning"
+
+#: templates/health/history.html:32
+msgid "Статус"
+msgstr "Status"
+
+#: templates/health/history.html:33
+msgid "Дата"
+msgstr "Date"
+
+#: templates/health/history.html:53
+msgid "История пока пустая"
+msgstr "The story is still empty"
+
+#: templates/health/history.html:54
+msgid "После первых записей здесь появится динамика показателей."
+msgstr "After the first entries, the dynamics of indicators will appear here."
+
+#: templates/notifications/list.html:6
+msgid "Все сигналы по здоровью, погоде и активности семьи"
+msgstr "All signals on health, weather and family activity"
+
+#: templates/notifications/list.html:10
+msgid "Центр уведомлений"
+msgstr "Notification Center"
+
+#: templates/notifications/list.html:13
+msgid "Отметить всё как прочитанное"
+msgstr "Mark all as read"
+
+#: templates/notifications/list.html:26
+msgid "Новое"
+msgstr "New"
+
+#: templates/notifications/list.html:35
+msgid "Прочитано"
+msgstr "Read"
+
+#: templates/notifications/list.html:41
+msgid "Уведомлений пока нет"
+msgstr "No notifications yet"
+
+#: templates/notifications/list.html:42
+msgid ""
+"Как только появятся алерты или напоминания, они будут собираться здесь."
+msgstr "As soon as alerts or reminders appear, they will be collected here."
+
+#: templates/payment/index.html:6
+msgid "Kaspi QR и сканирование платёжных кодов"
+msgstr "Kaspi QR and scanning payment codes"
+
+#: templates/payment/index.html:49
+msgid "Оплатить подписку"
+msgstr "Pay for subscription"
+
+#: templates/payment/index.html:52
+msgid "Сканировать QR"
+msgstr "Scan QR"
+
+#: templates/payment/index.html:60
+msgid "Kaspi QR — оплата подписки"
+msgstr "Kaspi QR - subscription payment"
+
+#: templates/payment/index.html:64
+msgid ""
+"Отсканируйте QR-код через приложение Kaspi и оплатите подписку Janynda."
+msgstr ""
+"Scan the QR code through the Kaspi app and pay for your Janynda "
+"subscription."
+
+#: templates/payment/index.html:74
+msgid "QR не сгенерирован — установите пакет qrcode."
+msgstr "QR not generated - install the qrcode package."
+
+#: templates/payment/index.html:87
+msgid "Открыть в браузере"
+msgstr "Open in browser"
+
+#: templates/payment/index.html:95
+msgid "Как оплатить:"
+msgstr "How to pay:"
+
+#: templates/payment/index.html:96
+msgid "1. Откройте Kaspi.kz или Kaspi Gold"
+msgstr "1. Open Kaspi.kz or Kaspi Gold"
+
+#: templates/payment/index.html:97
+msgid "2. Нажмите «Оплатить» → «По QR»"
+msgstr "2. Click “Pay” → “By QR”"
+
+#: templates/payment/index.html:98
+msgid "3. Отсканируйте код выше"
+msgstr "3. Scan the code above"
+
+#: templates/payment/index.html:107
+msgid "Сканировать QR с фото или камеры"
+msgstr "Scan QR from photo or camera"
+
+#: templates/payment/index.html:111
+msgid ""
+"Загрузите фотографию QR-кода или используйте камеру устройства для "
+"сканирования."
+msgstr "Upload a photo of the QR code or use your device camera to scan it."
+
+#: templates/payment/index.html:117
+msgid "Камера"
+msgstr "Camera"
+
+#: templates/payment/index.html:120
+msgid "Загрузить фото"
+msgstr "Upload photo"
+
+#: templates/payment/index.html:132
+msgid "QR считан:"
+msgstr "QR read:"
+
+#: templates/payment/index.html:138
+msgid "Открыть ссылку"
+msgstr "Open link"
+
+#: templates/payment/index.html:141
+msgid "Сбросить"
+msgstr "Reset"
+
+#: templates/payment/index.html:175
+msgid "Не удалось получить доступ к камере"
+msgstr "Failed to access camera"
+
+#: templates/payment/index.html:194
+msgid "QR не найден на фото"
+msgstr "QR not found in photo"

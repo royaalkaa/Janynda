@@ -1,4 +1,5 @@
 {% extends "base/base.html" %}
+{% load i18n %}
 
 {% block title %}Janynda{% endblock %}
 
@@ -7,17 +8,16 @@
     <div class="row align-items-center g-5 py-5">
         <div class="col-lg-6">
             <span class="badge text-bg-light border text-primary mb-3">AI health tracker for family care</span>
-            <h1 class="display-5 fw-bold mb-3">Следите за здоровьем близких без перегруза интерфейсом</h1>
+            <h1 class="display-5 fw-bold mb-3">{% trans "Следите за здоровьем близких без перегруза интерфейсом" %}</h1>
             <p class="lead text-muted mb-4">
-                Janynda помогает семье видеть давление, пульс, шаги, погодные риски и быстрые AI-комментарии
-                в одном белом, понятном дашборде.
+                {% trans "Janynda помогает семье видеть давление, пульс, шаги, погодные риски и быстрые AI-комментарии в одном белом, понятном дашборде." %}
             </p>
             <div class="d-flex flex-wrap gap-3">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard-home' %}" class="btn btn-primary btn-lg">Открыть дашборд</a>
+                    <a href="{% url 'dashboard-home' %}" class="btn btn-primary btn-lg">{% trans "Открыть дашборд" %}</a>
                 {% else %}
-                    <a href="{% url 'signup' %}" class="btn btn-primary btn-lg">Создать аккаунт</a>
-                    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">Войти</a>
+                    <a href="{% url 'signup' %}" class="btn btn-primary btn-lg">{% trans "Создать аккаунт" %}</a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">{% trans "Войти" %}</a>
                 {% endif %}
             </div>
         </div>
@@ -25,16 +25,20 @@
             <div class="j-card p-4">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        {% include "components/metric_card.html" with status="normal" icon="heart-pulse" color_class="green" title="Давление" value="124/81" unit="мм рт.ст." note="Последняя запись 20 минут назад" %}
+                        {% trans "Давление" as t_bp %}{% trans "Последняя запись 20 минут назад" as t_note_bp %}
+                        {% include "components/metric_card.html" with status="normal" icon="heart-pulse" color_class="green" title=t_bp value="124/81" unit="мм рт.ст." note=t_note_bp %}
                     </div>
                     <div class="col-md-6">
-                        {% include "components/metric_card.html" with status="warning" icon="activity" color_class="yellow" title="Пульс" value="102" unit="уд/мин" note="Требуется наблюдение" %}
+                        {% trans "Пульс" as t_hr %}{% trans "Требуется наблюдение" as t_note_hr %}
+                        {% include "components/metric_card.html" with status="warning" icon="activity" color_class="yellow" title=t_hr value="102" unit="уд/мин" note=t_note_hr %}
                     </div>
                     <div class="col-md-6">
-                        {% include "components/metric_card.html" with status="normal" icon="shoe-print" color_class="blue" title="Шаги" value="6 840" unit="сегодня" note="До цели осталось 1 160" %}
+                        {% trans "Шаги" as t_steps %}{% trans "До цели осталось 1 160" as t_note_steps %}{% trans "сегодня" as t_today %}
+                        {% include "components/metric_card.html" with status="normal" icon="shoe-print" color_class="blue" title=t_steps value="6 840" unit=t_today note=t_note_steps %}
                     </div>
                     <div class="col-md-6">
-                        {% include "components/metric_card.html" with status="warning" icon="cloud-haze" color_class="red" title="Воздух" value="AQI 4" unit="" note="Лучше перенести прогулку" %}
+                        {% trans "Воздух" as t_air %}{% trans "Лучше перенести прогулку" as t_note_air %}
+                        {% include "components/metric_card.html" with status="warning" icon="cloud-haze" color_class="red" title=t_air value="AQI 4" unit="" note=t_note_air %}
                     </div>
                 </div>
             </div>

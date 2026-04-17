@@ -1,21 +1,12 @@
-{% extends base_template %}
+{% extends "base/subject.html" %}
+{% load i18n %}
 
-{% block title %}Мои показатели · Janynda{% endblock %}
-{% block topbar_title %}Мои показатели{% endblock %}
-{% block topbar_subtitle %}Быстрый доступ к метрикам, плану, геолокации и голосовому помощнику{% endblock %}
+{% block title %}{% trans "Мои показатели" %} · Janynda{% endblock %}
 
 {% block content %}
 <div class="mb-4">
-    <h1 class="h3 mb-1">Здравствуйте, {{ user.get_display_name }}</h1>
-    <p class="text-muted mb-0">Быстрый ввод ниже занимает меньше 30 секунд.</p>
-</div>
-
-<div class="d-flex flex-wrap gap-2 mb-4">
-    <a href="{% url 'care-plan' %}" class="btn btn-outline-primary">План дня</a>
-    <a href="{% url 'care-location' %}" class="btn btn-outline-primary">Геолокация</a>
-    <a href="{% url 'care-wearables' %}" class="btn btn-outline-primary">Браслет</a>
-    <a href="{% url 'care-places' %}" class="btn btn-outline-primary">Куда сходить</a>
-    <a href="{% url 'ai-assistant' %}" class="btn btn-primary">Голосовой AI</a>
+    <h1 class="h3 mb-1">{% trans "Здравствуйте" %}, {{ user.get_display_name }}</h1>
+    <p class="text-muted mb-0">{% trans "Быстрый ввод ниже занимает меньше 30 секунд." %}</p>
 </div>
 
 {% if ai_comment %}
@@ -25,104 +16,36 @@
     </div>
 {% endif %}
 
-<div class="row g-4 mb-4">
-    <div class="col-lg-5">
-        <div class="j-card h-100">
-            <div class="j-card-header">План на сегодня</div>
-            <div class="j-card-body">
-                {% if today_plan_summary.total %}
-                    <div class="small text-muted mb-2">Всего: {{ today_plan_summary.total }} · Выполнено: {{ today_plan_summary.completed }}</div>
-                    <div class="d-flex flex-column gap-2">
-                        {% for item in today_plan_summary.items|slice:":4" %}
-                            <div class="border rounded-3 p-2 {% if item.is_completed %}bg-light{% endif %}">
-                                <div class="fw-semibold {% if item.is_completed %}text-decoration-line-through text-muted{% endif %}">{{ item.title }}</div>
-                                <div class="small text-muted">{{ item.time_label }}</div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted mb-0">На сегодня задач пока нет.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-7">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <div class="j-card h-100">
-                    <div class="j-card-header">Последняя геоточка</div>
-                    <div class="j-card-body">
-                        {% if last_location %}
-                            <div class="fw-semibold mb-1">{{ last_location.latitude }}, {{ last_location.longitude }}</div>
-                            <div class="small text-muted">{{ last_location.captured_at|date:"d.m.Y H:i" }}</div>
-                        {% else %}
-                            <p class="text-muted mb-0">Геолокация ещё не передавалась.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="j-card h-100">
-                    <div class="j-card-header">Браслет</div>
-                    <div class="j-card-body">
-                        {% if wearable_summary %}
-                            <div class="small text-muted mb-1">{{ wearable_summary.device.nickname }}</div>
-                            <div class="fw-semibold mb-1">{{ wearable_summary.steps }} шагов</div>
-                            <div class="small text-muted">Пульс: {{ wearable_summary.average_heart_rate|default:"—" }} · Сон: {{ wearable_summary.sleep_hours|default:"—" }}</div>
-                        {% else %}
-                            <p class="text-muted mb-0">Данные с браслета пока не подключены.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="j-card">
-                    <div class="j-card-header">Куда можно сходить</div>
-                    <div class="j-card-body">
-                        {% if featured_places %}
-                            <div class="d-flex flex-wrap gap-2">
-                                {% for place in featured_places|slice:":3" %}
-                                    <div class="border rounded-3 px-3 py-2 bg-light">
-                                        <div class="fw-semibold small">{{ place.name }}</div>
-                                        <div class="small text-muted">{{ place.category_label }}</div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <p class="text-muted mb-0">Подборка мест появится здесь.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+{% trans "Давление" as t_bp %}
+{% trans "Пульс" as t_hr %}
+{% trans "Шаги" as t_steps %}
+{% trans "Ещё не вводили" as t_no_data %}
 
 <div class="row g-3 mb-4">
     <div class="col-md-4">
         {% with metric=latest_metrics.blood_pressure %}
             {% if metric %}
-                {% include "components/metric_card.html" with status=metric.get_severity title="Давление" value=metric.get_display_value unit="мм рт.ст." icon="heart-pulse" color_class="green" note=metric.recorded_at|date:"d.m H:i" %}
+                {% include "components/metric_card.html" with status=metric.get_severity title=t_bp value=metric.get_display_value unit="мм рт.ст." icon="heart-pulse" color_class="green" note=metric.recorded_at|date:"d.m H:i" %}
             {% else %}
-                {% include "components/metric_card.html" with status="none" title="Давление" value="—" icon="heart-pulse" color_class="green" note="Ещё не вводили" %}
+                {% include "components/metric_card.html" with status="none" title=t_bp value="—" icon="heart-pulse" color_class="green" note=t_no_data %}
             {% endif %}
         {% endwith %}
     </div>
     <div class="col-md-4">
         {% with metric=latest_metrics.heart_rate %}
             {% if metric %}
-                {% include "components/metric_card.html" with status=metric.get_severity title="Пульс" value=metric.get_display_value icon="activity" color_class="yellow" note=metric.recorded_at|date:"d.m H:i" %}
+                {% include "components/metric_card.html" with status=metric.get_severity title=t_hr value=metric.get_display_value icon="activity" color_class="yellow" note=metric.recorded_at|date:"d.m H:i" %}
             {% else %}
-                {% include "components/metric_card.html" with status="none" title="Пульс" value="—" icon="activity" color_class="yellow" note="Ещё не вводили" %}
+                {% include "components/metric_card.html" with status="none" title=t_hr value="—" icon="activity" color_class="yellow" note=t_no_data %}
             {% endif %}
         {% endwith %}
     </div>
     <div class="col-md-4">
         {% with metric=latest_metrics.steps %}
             {% if metric %}
-                {% include "components/metric_card.html" with status=metric.get_severity title="Шаги" value=metric.get_display_value icon="shoe-print" color_class="blue" note=metric.recorded_at|date:"d.m H:i" %}
+                {% include "components/metric_card.html" with status=metric.get_severity title=t_steps value=metric.get_display_value icon="shoe-print" color_class="blue" note=metric.recorded_at|date:"d.m H:i" %}
             {% else %}
-                {% include "components/metric_card.html" with status="none" title="Шаги" value="—" icon="shoe-print" color_class="blue" note="Ещё не вводили" %}
+                {% include "components/metric_card.html" with status="none" title=t_steps value="—" icon="shoe-print" color_class="blue" note=t_no_data %}
             {% endif %}
         {% endwith %}
     </div>
@@ -131,42 +54,40 @@
 <div class="row g-4">
     <div class="col-lg-6">
         <div class="j-card mb-4">
-            <div class="j-card-header">Быстрый ввод давления</div>
+            <div class="j-card-header">{% trans "Быстрый ввод давления" %}</div>
             <div class="j-card-body">
                 <form hx-post="{% url 'health-quick-entry' 'blood_pressure' %}" hx-target="#bp-result" hx-swap="innerHTML" class="j-quick-entry">
-                    {% csrf_token %}
                     <div class="j-field-group">
                         <div class="flex-fill">
                             <input type="number" name="systolic" class="j-metric-input" placeholder="120" required>
-                            <div class="j-metric-input-label">Систолическое</div>
+                            <div class="j-metric-input-label">{% trans "Систолическое" %}</div>
                         </div>
                         <div class="flex-fill">
                             <input type="number" name="diastolic" class="j-metric-input" placeholder="80" required>
-                            <div class="j-metric-input-label">Диастолическое</div>
+                            <div class="j-metric-input-label">{% trans "Диастолическое" %}</div>
                         </div>
                         <div class="flex-fill">
                             <input type="number" name="pulse" class="j-metric-input" placeholder="72">
-                            <div class="j-metric-input-label">Пульс</div>
+                            <div class="j-metric-input-label">{% trans "Пульс" %}</div>
                         </div>
                     </div>
-                    <button class="j-submit-btn" type="submit">Сохранить давление</button>
+                    <button class="j-submit-btn" type="submit">{% trans "Сохранить давление" %}</button>
                 </form>
                 <div id="bp-result" class="mt-3" data-autoclear="true"></div>
             </div>
         </div>
 
         <div class="j-card">
-            <div class="j-card-header">Быстрый ввод шагов</div>
+            <div class="j-card-header">{% trans "Быстрый ввод шагов" %}</div>
             <div class="j-card-body">
                 <form hx-post="{% url 'health-quick-entry' 'steps' %}" hx-target="#steps-result" hx-swap="innerHTML" class="j-quick-entry">
-                    {% csrf_token %}
                     <div class="j-field-group">
                         <div class="flex-fill">
                             <input type="number" name="steps" class="j-metric-input" placeholder="6800" required>
-                            <div class="j-metric-input-label">Шагов за день</div>
+                            <div class="j-metric-input-label">{% trans "Шагов за день" %}</div>
                         </div>
                     </div>
-                    <button class="j-submit-btn" type="submit">Сохранить шаги</button>
+                    <button class="j-submit-btn" type="submit">{% trans "Сохранить шаги" %}</button>
                 </form>
                 <div id="steps-result" class="mt-3" data-autoclear="true"></div>
             </div>
@@ -175,36 +96,35 @@
 
     <div class="col-lg-6">
         <div class="j-card mb-4">
-            <div class="j-card-header">Быстрый ввод пульса</div>
+            <div class="j-card-header">{% trans "Быстрый ввод пульса" %}</div>
             <div class="j-card-body">
                 <form hx-post="{% url 'health-quick-entry' 'heart_rate' %}" hx-target="#hr-result" hx-swap="innerHTML" class="j-quick-entry">
-                    {% csrf_token %}
                     <div class="j-field-group">
                         <div class="flex-fill">
                             <input type="number" name="bpm" class="j-metric-input" placeholder="72" required>
-                            <div class="j-metric-input-label">Ударов в минуту</div>
+                            <div class="j-metric-input-label">{% trans "Ударов в минуту" %}</div>
                         </div>
                     </div>
-                    <button class="j-submit-btn" type="submit">Сохранить пульс</button>
+                    <button class="j-submit-btn" type="submit">{% trans "Сохранить пульс" %}</button>
                 </form>
                 <div id="hr-result" class="mt-3" data-autoclear="true"></div>
             </div>
         </div>
 
         <div class="j-card">
-            <div class="j-card-header">Мои наблюдатели</div>
+            <div class="j-card-header">{% trans "Мои наблюдатели" %}</div>
             <div class="j-card-body">
                 {% if family_links %}
                     <div class="d-flex flex-column gap-3">
                         {% for item in family_links %}
                             <div class="border rounded-3 p-3 bg-light">
                                 <div class="fw-semibold">{{ item.observer.get_display_name }}</div>
-                                <div class="small text-muted">Видит ваши показатели и уведомления по рискам.</div>
+                                <div class="small text-muted">{% trans "Видит ваши показатели и уведомления по рискам." %}</div>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-muted mb-0">Пока никто не подключён как наблюдатель.</p>
+                    <p class="text-muted mb-0">{% trans "Пока никто не подключён как наблюдатель." %}</p>
                 {% endif %}
             </div>
         </div>
@@ -214,7 +134,7 @@
 <div class="row g-4 mt-1">
     <div class="col-lg-6">
         <div class="j-card">
-            <div class="j-card-header">Шаги за 7 дней</div>
+            <div class="j-card-header">{% trans "Шаги за 7 дней" %}</div>
             <div class="j-card-body">
                 <div class="j-chart-container" style="height: 260px;">
                     <canvas id="steps-chart"></canvas>
@@ -224,7 +144,7 @@
     </div>
     <div class="col-lg-6">
         <div class="j-card">
-            <div class="j-card-header">Давление за последние записи</div>
+            <div class="j-card-header">{% trans "Давление за последние записи" %}</div>
             <div class="j-card-body">
                 <div class="j-chart-container" style="height: 260px;">
                     <canvas id="bp-chart"></canvas>

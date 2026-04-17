@@ -1,7 +1,6 @@
 from datetime import time
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -35,14 +34,10 @@ def signup_view(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
-            try:
-                user = form.save()
-            except ValidationError:
-                pass
-            else:
-                login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])
-                messages.success(request, "Аккаунт создан. Давайте настроим Janynda под вас.")
-                return redirect("onboarding-step", step=1)
+            user = form.save()
+            login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])
+            messages.success(request, "Аккаунт создан. Давайте настроим Janynda под вас.")
+            return redirect("onboarding-step", step=1)
     else:
         form = SignUpForm()
 

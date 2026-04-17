@@ -1,0 +1,222 @@
+{% extends "base/observer.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Оплата" %} — Janynda{% endblock %}
+{% block topbar_title %}{% trans "Оплата" %}{% endblock %}
+{% block topbar_subtitle %}{% trans "Kaspi QR и сканирование платёжных кодов" %}{% endblock %}
+
+{% block head %}
+<style>
+  .pay-section { max-width: 560px; }
+  #qr-reader   { width: 100%; border-radius: 12px; overflow: hidden; }
+  #qr-result   { font-size: 15px; word-break: break-all; }
+  .qr-img-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  }
+  .qr-img-wrap img { width: 220px; height: 220px; }
+  .tab-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1.5px solid var(--j-border);
+    background: var(--j-surface);
+    border-radius: var(--j-radius-sm);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--j-text-muted);
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: var(--j-primary);
+    border-color: var(--j-primary);
+    color: #fff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pay-section">
+
+  {# ── Tabs ── #}
+  <div class="d-flex gap-2 mb-4">
+    <button class="tab-btn active" id="tabPay" onclick="switchTab('pay')">
+      <i class="bi bi-qr-code me-1"></i>{% trans "Оплатить подписку" %}
+    </button>
+    <button class="tab-btn" id="tabScan" onclick="switchTab('scan')">
+      <i class="bi bi-camera me-1"></i>{% trans "Сканировать QR" %}
+    </button>
+  </div>
+
+  {# ── Tab: Оплата ── #}
+  <div id="panePay">
+    <div class="j-card">
+      <div class="j-card-header">
+        <span><i class="bi bi-credit-card me-2 text-primary"></i>{% trans "Kaspi QR — оплата подписки" %}</span>
+      </div>
+      <div class="j-card-body text-center">
+        <p class="text-muted mb-4">
+          {% trans "Отсканируйте QR-код через приложение Kaspi и оплатите подписку Janynda." %}
+        </p>
+
+        {% if qr_b64 %}
+          <div class="qr-img-wrap mb-3">
+            <img src="data:image/png;base64,{{ qr_b64 }}" alt="Kaspi QR">
+          </div>
+        {% else %}
+          <div class="j-alert warning mb-3">
+            <i class="bi bi-exclamation-triangle"></i>
+            {% trans "QR не сгенерирован — установите пакет qrcode." %}
+          </div>
+        {% endif %}
+
+        <div class="mb-2">
+          <span class="badge text-bg-success fs-6 px-3 py-2">
+            <i class="bi bi-phone me-1"></i>{{ kaspi_phone }}
+          </span>
+        </div>
+        <p class="text-muted small mb-3">{{ kaspi_name }}</p>
+
+        <a href="{{ kaspi_url }}" target="_blank" rel="noopener"
+           class="btn btn-primary">
+          <i class="bi bi-box-arrow-up-right me-1"></i>{% trans "Открыть в браузере" %}
+        </a>
+      </div>
+    </div>
+
+    <div class="j-alert success mt-3">
+      <i class="bi bi-info-circle"></i>
+      <div>
+        <strong>{% trans "Как оплатить:" %}</strong><br>
+        {% trans "1. Откройте Kaspi.kz или Kaspi Gold" %}<br>
+        {% trans "2. Нажмите «Оплатить» → «По QR»" %}<br>
+        {% trans "3. Отсканируйте код выше" %}
+      </div>
+    </div>
+  </div>
+
+  {# ── Tab: Сканирование ── #}
+  <div id="paneScan" style="display:none">
+    <div class="j-card mb-3">
+      <div class="j-card-header">
+        <span><i class="bi bi-camera me-2 text-primary"></i>{% trans "Сканировать QR с фото или камеры" %}</span>
+      </div>
+      <div class="j-card-body">
+        <p class="text-muted mb-3">
+          {% trans "Загрузите фотографию QR-кода или используйте камеру устройства для сканирования." %}
+        </p>
+
+        {# Выбор источника #}
+        <div class="d-flex gap-2 mb-3">
+          <button class="btn btn-outline-primary flex-fill" onclick="startCamera()">
+            <i class="bi bi-camera-fill me-1"></i>{% trans "Камера" %}
+          </button>
+          <button class="btn btn-outline-primary flex-fill" onclick="document.getElementById('qrFileInput').click()">
+            <i class="bi bi-image me-1"></i>{% trans "Загрузить фото" %}
+          </button>
+          <input type="file" id="qrFileInput" accept="image/*" class="d-none" onchange="scanFromFile(event)">
+        </div>
+
+        <div id="qr-reader" class="mb-3"></div>
+
+        {# Результат #}
+        <div id="qr-result-wrap" style="display:none">
+          <div class="j-alert success">
+            <i class="bi bi-check-circle-fill"></i>
+            <div>
+              <strong>{% trans "QR считан:" %}</strong>
+              <div id="qr-result" class="mt-1"></div>
+            </div>
+          </div>
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-primary flex-fill" id="qr-open-btn" onclick="openQrLink()">
+              <i class="bi bi-box-arrow-up-right me-1"></i>{% trans "Открыть ссылку" %}
+            </button>
+            <button class="btn btn-outline-secondary" onclick="resetScan()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i>{% trans "Сбросить" %}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{# html5-qrcode CDN #}
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+var html5QrCode = null;
+var lastScanned = "";
+
+function switchTab(tab) {
+  document.getElementById('panePay').style.display  = tab === 'pay'  ? '' : 'none';
+  document.getElementById('paneScan').style.display = tab === 'scan' ? '' : 'none';
+  document.getElementById('tabPay').classList.toggle('active',  tab === 'pay');
+  document.getElementById('tabScan').classList.toggle('active', tab === 'scan');
+  if (tab !== 'scan') stopCamera();
+}
+
+function startCamera() {
+  resetScan();
+  if (!html5QrCode) html5QrCode = new Html5Qrcode("qr-reader");
+  html5QrCode.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: { width: 250, height: 250 } },
+    onScanSuccess,
+    function(){}
+  ).catch(function(err) {
+    document.getElementById('qr-reader').innerHTML =
+      '<div class="text-danger p-3">{% trans "Не удалось получить доступ к камере" %}: ' + err + '</div>';
+  });
+}
+
+function stopCamera() {
+  if (html5QrCode && html5QrCode.isScanning) {
+    html5QrCode.stop().catch(function(){});
+  }
+}
+
+function scanFromFile(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  resetScan();
+  if (!html5QrCode) html5QrCode = new Html5Qrcode("qr-reader");
+  Html5Qrcode.scanFile(file, true)
+    .then(onScanSuccess)
+    .catch(function(err) {
+      document.getElementById('qr-reader').innerHTML =
+        '<div class="j-alert warning p-3"><i class="bi bi-exclamation-triangle me-2"></i>{% trans "QR не найден на фото" %}</div>';
+    });
+  event.target.value = "";
+}
+
+function onScanSuccess(decodedText) {
+  stopCamera();
+  lastScanned = decodedText;
+  document.getElementById('qr-result').textContent = decodedText;
+  document.getElementById('qr-result-wrap').style.display = '';
+  document.getElementById('qr-reader').innerHTML = "";
+  var openBtn = document.getElementById('qr-open-btn');
+  var isUrl = /^https?:\/\//i.test(decodedText);
+  openBtn.style.display = isUrl ? '' : 'none';
+}
+
+function openQrLink() {
+  if (lastScanned) window.open(lastScanned, '_blank', 'noopener');
+}
+
+function resetScan() {
+  stopCamera();
+  lastScanned = "";
+  document.getElementById('qr-reader').innerHTML = "";
+  document.getElementById('qr-result-wrap').style.display = 'none';
+  document.getElementById('qr-result').textContent = "";
+}
+</script>
+{% endblock %}

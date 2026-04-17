@@ -1,4 +1,5 @@
 {% extends "base/base.html" %}
+{% load i18n %}
 
 {% block body_class %}bg-light{% endblock %}
 
@@ -8,7 +9,20 @@
         <a href="{% url 'subject-dashboard' %}" class="brand text-decoration-none">
             <i class="bi bi-heart-pulse"></i> Janynda
         </a>
-        <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-secondary">Выйти</a>
+        <div class="d-flex align-items-center gap-2">
+            {# Переключатель языка #}
+            <form action="{% url 'set_language' %}" method="post" class="d-flex gap-1 align-items-center">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" name="language" value="ru"
+                        class="btn btn-xs px-2 py-1 {% if LANGUAGE_CODE == 'ru' %}btn-primary{% else %}btn-outline-secondary{% endif %}" style="font-size:11px">RU</button>
+                <button type="submit" name="language" value="kk"
+                        class="btn btn-xs px-2 py-1 {% if LANGUAGE_CODE == 'kk' %}btn-primary{% else %}btn-outline-secondary{% endif %}" style="font-size:11px">KZ</button>
+                <button type="submit" name="language" value="en"
+                        class="btn btn-xs px-2 py-1 {% if LANGUAGE_CODE == 'en' %}btn-primary{% else %}btn-outline-secondary{% endif %}" style="font-size:11px">EN</button>
+            </form>
+            <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-secondary">{% trans "Выйти" %}</a>
+        </div>
     </div>
     <main class="j-subject-content">
         {% block content %}{% endblock %}
@@ -16,16 +30,24 @@
     <nav class="j-subject-bottomnav">
         <a href="{% url 'subject-dashboard' %}" class="{% if request.path == '/dashboard/subject/' %}active{% endif %}">
             <i class="bi bi-house"></i>
-            <span>Главная</span>
+            <span>{% trans "Главная" %}</span>
         </a>
         <a href="{% url 'health-history' %}" class="{% if request.path == '/health/history/' %}active{% endif %}">
             <i class="bi bi-graph-up"></i>
-            <span>История</span>
+            <span>{% trans "История" %}</span>
+        </a>
+        <a href="{% url 'payment' %}" class="{% if request.path == '/payment/' %}active{% endif %}">
+            <i class="bi bi-qr-code"></i>
+            <span>{% trans "Оплата" %}</span>
         </a>
         <a href="{% url 'ai-assistant' %}" class="{% if request.path == '/ai/' %}active{% endif %}">
             <i class="bi bi-stars"></i>
             <span>AI</span>
         </a>
+        <button class="sp-eye-tab" onclick="toggleSpecial()" aria-label="{% trans 'Версия для слабовидящих' %}">
+            <i class="bi bi-eye-fill"></i>
+            <span>{% trans "Вид" %}</span>
+        </button>
     </nav>
 </div>
 {% endblock %}

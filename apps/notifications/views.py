@@ -1,27 +1,12 @@
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 from django.utils import timezone
+from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.conf import settings
 
 from .models import Notification
-
-
-def _get_post_action_redirect(request):
-    referer = request.META.get("HTTP_REFERER")
-    allowed_hosts = set(settings.ALLOWED_HOSTS)
-    allowed_hosts.add(request.get_host())
-
-    if referer and url_has_allowed_host_and_scheme(
-        url=referer,
-        allowed_hosts=allowed_hosts,
-        require_https=request.is_secure(),
-    ):
-        return referer
-
-    return reverse("notifications-list")
 
 
 @login_required
@@ -35,7 +20,7 @@ def notification_list_view(request):
 def notification_read_view(request, pk):
     notification = get_object_or_404(Notification, pk=pk, recipient=request.user)
     notification.mark_read()
-    return redirect(_get_post_action_redirect(request))
+    return redirect(request.META.get("HTTP_REFERER", "notifications-list"))
 
 
 @login_required
@@ -45,4 +30,53 @@ def notification_read_all_view(request):
         is_read=True,
         read_at=timezone.now(),
     )
-    return redirect(_get_post_action_redirect(request))
+    return redirect("notifications-list")
+
+
+@login_required
+@require_POST
+def sos_trigger_view(request):
+    """SOS сигнал: создаёт CRITICAL уведомление и оповещает наблюдателей."""
+    user = request.user
+    profile = getattr(user, "profile", None)
+    emergency_contact = profile.emergency_contact if profile else ""
+
+    # Уведомление себе
+    Notification.objects.create(
+        recipient=user,
+        title="SOS сигнал отправлен",
+        body="Вы активировали SOS. Ваши наблюдатели уведомлены.",
+        severity=Notification.Severity.CRITICAL,
+        category=Notification.Category.SYSTEM,
+    )
+
+    # Уведомить всех наблюдателей этого субъекта
+    if user.is_subject:
+        from apps.family.models import FamilyMembership
+        for m in FamilyMembership.objects.filter(subject=user).select_related("observer"):
+            Notification.objects.create(
+                recipient=m.observer,
+                title=f"🆘 SOS от {user.get_display_name()}",
+                body=f"{user.get_display_name()} нажал(а) кнопку SOS. Требуется срочная помощь!",
+                severity=Notification.Severity.CRITICAL,
+                category=Notification.Category.SYSTEM,
+                related_subject=user,
+            )
+
+    # Email на контакт экстренной помощи
+    if emergency_contact:
+        send_mail(
+            subject=f"[SOS] {user.get_display_name()} нуждается в помощи",
+            message=(
+                f"Пользователь {user.get_display_name()} нажал кнопку SOS "
+                f"в приложении Janynda.\n\nПожалуйста, свяжитесь с ним немедленно."
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[emergency_contact],
+            fail_silently=True,
+        )
+
+    return HttpResponse(
+        '<div class="j-sos-sent"><i class="bi bi-check-circle-fill"></i> Помощь вызвана!</div>',
+        content_type="text/html",
+    )

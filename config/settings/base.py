@@ -1,5 +1,5 @@
-import environ
 from pathlib import Path
+import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -26,11 +26,11 @@ THIRD_PARTY_APPS = [
     "django_htmx",
     "django_celery_beat",
     "django_extensions",
+    "rosetta",
 ]
 
 LOCAL_APPS = [
     "apps.accounts",
-    "apps.care",
     "apps.family",
     "apps.health",
     "apps.weather",
@@ -38,6 +38,7 @@ LOCAL_APPS = [
     "apps.ai_assistant",
     "apps.challenges",
     "apps.dashboard",
+    "apps.payment",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -50,6 +51,7 @@ SITE_ID = 1
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -73,6 +75,7 @@ TEMPLATES = [
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
+                "django.template.context_processors.i18n",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "apps.notifications.context_processors.unread_notifications_count",
@@ -135,24 +138,6 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "Asia/Almaty"
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-CELERY_BEAT_SCHEDULE = {
-    "care-generate-recurring-plan-items": {
-        "task": "apps.care.tasks.generate_recurring_plan_items",
-        "schedule": 1800,
-    },
-    "care-send-task-reminders": {
-        "task": "apps.care.tasks.send_task_reminders",
-        "schedule": 60,
-    },
-    "care-check-location-absence": {
-        "task": "apps.care.tasks.check_location_absence",
-        "schedule": 1800,
-    },
-    "care-check-wearable-goals": {
-        "task": "apps.care.tasks.check_wearable_goals",
-        "schedule": 3600,
-    },
-}
 
 # ---------------------------------------------------------------------------
 # Email
@@ -183,6 +168,18 @@ TIME_ZONE = "Asia/Almaty"
 USE_I18N = True
 USE_TZ = True
 
+LANGUAGES = [
+    ("ru", "Русский"),
+    ("kk", "Қазақша"),
+    ("en", "English"),
+]
+LOCALE_PATHS = [BASE_DIR / "locale"]
+
+# Kaspi payment settings (override in .env)
+KASPI_PHONE = env("KASPI_PHONE", default="+7 777 000 00 00")
+KASPI_NAME  = env("KASPI_NAME",  default="Janynda")
+KASPI_URL   = env("KASPI_URL",   default="https://kaspi.kz/pay/Janynda")
+
 # ---------------------------------------------------------------------------
 # Crispy Forms
 # ---------------------------------------------------------------------------
@@ -194,7 +191,6 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # ---------------------------------------------------------------------------
 OPENWEATHER_API_KEY = env("OPENWEATHER_API_KEY", default="")
 OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
-OPENAI_CHAT_MODEL = env("OPENAI_CHAT_MODEL", default="gpt-4o-mini")
 
 # ---------------------------------------------------------------------------
 # App settings

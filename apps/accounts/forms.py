@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.db import IntegrityError
 from django.utils.text import slugify
 
 from apps.family.models import FamilyMembership
@@ -64,13 +63,13 @@ class SignUpForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data["email"].lower().strip()
-        if User.objects.filter(email__iexact=email).exists():
+        if User.objects.filter(email=email).exists():
             raise forms.ValidationError("Пользователь с таким email уже существует.")
         return email
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.email = self.cleaned_data["email"].lower().strip()
+        user.email = self.cleaned_data["email"]
         user.first_name = self.cleaned_data["first_name"]
         user.last_name = self.cleaned_data["last_name"]
         user.phone = self.cleaned_data["phone"]
@@ -84,11 +83,7 @@ class SignUpForm(UserCreationForm):
             user.username = f"{base}-{suffix}"
 
         if commit:
-            try:
-                user.save()
-            except IntegrityError:
-                self.add_error("email", "Пользователь с таким email уже существует.")
-                raise forms.ValidationError("Пользователь с таким email уже существует.")
+            user.save()
         return user
 
 

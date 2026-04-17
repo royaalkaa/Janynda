@@ -1,6 +1,7 @@
 {% extends "base/base.html" %}
+{% load i18n %}
 
-{% block title %}Вход · Janynda{% endblock %}
+{% block title %}{% trans "Вход" %} · Janynda{% endblock %}
 
 {% block layout %}
 <div class="container py-5">
@@ -9,8 +10,8 @@
             <div class="j-onboarding-card">
                 <div class="text-center mb-4">
                     <div class="brand text-primary fw-bold fs-3 mb-2">Janynda</div>
-                    <h1 class="h3 mb-1">Вход</h1>
-                    <p class="text-muted mb-0">Войдите по email, чтобы открыть дашборд семьи.</p>
+                    <h1 class="h3 mb-1">{% trans "Вход" %}</h1>
+                    <p class="text-muted mb-0">{% trans "Войдите по email, чтобы открыть дашборд семьи." %}</p>
                 </div>
                 <form method="post" class="d-grid gap-3">
                     {% csrf_token %}
@@ -23,10 +24,10 @@
                             {% endif %}
                         </div>
                     {% endfor %}
-                    <button type="submit" class="btn btn-primary btn-lg">Войти</button>
+                    <button type="submit" class="btn btn-primary btn-lg">{% trans "Войти" %}</button>
                 </form>
                 <p class="text-muted text-center mt-4 mb-0">
-                    Нет аккаунта? <a href="{% url 'signup' %}">Создать</a>
+                    {% trans "Нет аккаунта?" %} <a href="{% url 'signup' %}">{% trans "Создать" %}</a>
                 </p>
             </div>
         </div>

@@ -1,26 +1,19 @@
 {% extends "base/observer.html" %}
+{% load i18n %}
 
-{% block title %}Панель наблюдения · Janynda{% endblock %}
-{% block topbar_title %}Панель наблюдения{% endblock %}
-{% block topbar_subtitle %}Семья, статусы и первые сигналы риска{% endblock %}
+{% block title %}{% trans "Панель наблюдения" %} · Janynda{% endblock %}
+{% block topbar_title %}{% trans "Панель наблюдения" %}{% endblock %}
+{% block topbar_subtitle %}{% trans "Семья, статусы и первые сигналы риска" %}{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-wrap gap-2 mb-4">
-    <a href="{% url 'care-plan' %}" class="btn btn-outline-primary">План дня</a>
-    <a href="{% url 'care-location' %}" class="btn btn-outline-primary">Геолокация</a>
-    <a href="{% url 'care-wearables' %}" class="btn btn-outline-primary">Фитнес-браслет</a>
-    <a href="{% url 'care-places' %}" class="btn btn-outline-primary">Полезные места</a>
-    <a href="{% url 'ai-assistant' %}" class="btn btn-primary">Голосовой AI</a>
-</div>
-
 <div class="row g-4">
     <div class="col-xl-8">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h2 class="h4 mb-1">Состояние семьи</h2>
-                <p class="text-muted mb-0">Карточки показывают последний статус по каждому близкому.</p>
+                <h2 class="h4 mb-1">{% trans "Состояние семьи" %}</h2>
+                <p class="text-muted mb-0">{% trans "Карточки показывают последний статус по каждому близкому." %}</p>
             </div>
-            <a href="{% url 'family-overview' %}" class="btn btn-primary">Добавить родственника</a>
+            <a href="{% url 'family-overview' %}" class="btn btn-primary">{% trans "Добавить родственника" %}</a>
         </div>
 
         {% if snapshots %}
@@ -38,14 +31,14 @@
                                         <div class="j-member-name">{{ item.membership.get_subject_display_name }}</div>
                                         <div class="j-member-relation">{{ item.membership.get_relation_display_name }}</div>
                                         {% if item.last_seen %}
-                                            <div class="j-member-last-seen">Последняя запись: {{ item.last_seen|date:"d.m.Y H:i" }}</div>
+                                            <div class="j-member-last-seen">{% trans "Последняя запись:" %} {{ item.last_seen|date:"d.m.Y H:i" }}</div>
                                         {% else %}
-                                            <div class="j-member-last-seen">Пока нет записей</div>
+                                            <div class="j-member-last-seen">{% trans "Пока нет записей" %}</div>
                                         {% endif %}
                                     </div>
                                 </div>
                                 <span class="j-traffic-light {{ item.status }}">
-                                    {% if item.status == "critical" %}Критично{% elif item.status == "warning" %}Внимание{% elif item.status == "normal" %}Норма{% else %}Нет данных{% endif %}
+                                    {% if item.status == "critical" %}{% trans "Критично" %}{% elif item.status == "warning" %}{% trans "Внимание" %}{% elif item.status == "normal" %}{% trans "Норма" %}{% else %}{% trans "Нет данных" %}{% endif %}
                                 </span>
                             </div>
 
@@ -60,7 +53,7 @@
                                 {% empty %}
                                     <div class="col-12">
                                         <div class="border rounded-3 p-3 bg-light text-muted small">
-                                            Попросите родственника внести первые показатели через magic link.
+                                            {% trans "Попросите родственника внести первые показатели через magic link." %}
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -68,10 +61,10 @@
 
                             <div class="d-flex flex-wrap gap-2">
                                 {% if item.membership.subject %}
-                                    <a href="{% url 'health-history-subject' item.membership.subject.id %}" class="btn btn-sm btn-outline-primary">История</a>
+                                    <a href="{% url 'health-history-subject' item.membership.subject.id %}" class="btn btn-sm btn-outline-primary">{% trans "История" %}</a>
                                 {% endif %}
                                 {% if item.membership.magic_link %}
-                                    <span class="badge text-bg-light border">Magic link активен</span>
+                                    <span class="badge text-bg-light border">{% trans "Magic link активен" %}</span>
                                 {% endif %}
                             </div>
                         </div>
@@ -79,13 +72,16 @@
                 {% endfor %}
             </div>
         {% else %}
-            {% include "components/empty_state.html" with icon="people" title="Семья пока не собрана" text="Добавьте первого родственника, чтобы увидеть его карточку, magic link и статусы на дашборде." action_url="/family/" action_label="Добавить родственника" %}
+            {% trans "Семья пока не собрана" as t_empty_title %}
+            {% trans "Добавьте первого родственника, чтобы увидеть его карточку, magic link и статусы на дашборде." as t_empty_text %}
+            {% trans "Добавить родственника" as t_add_label %}
+            {% include "components/empty_state.html" with icon="people" title=t_empty_title text=t_empty_text action_url="/family/" action_label=t_add_label %}
         {% endif %}
     </div>
 
     <div class="col-xl-4">
         <div class="j-card mb-4">
-            <div class="j-card-header">AI-комментарий</div>
+            <div class="j-card-header">{% trans "AI-комментарий" %}</div>
             <div class="j-card-body">
                 {% if ai_comment %}
                     <div class="j-alert success">
@@ -93,69 +89,13 @@
                         <div>{{ ai_comment.content }}</div>
                     </div>
                 {% else %}
-                    <p class="text-muted mb-0">Комментарий появится после первой записи метрик.</p>
+                    <p class="text-muted mb-0">{% trans "Комментарий появится после первой записи метрик." %}</p>
                 {% endif %}
             </div>
         </div>
 
         <div class="j-card mb-4">
-            <div class="j-card-header">План на сегодня{% if focus_subject %} · {{ focus_subject.get_display_name }}{% endif %}</div>
-            <div class="j-card-body">
-                {% if focus_plan_summary.total %}
-                    <div class="small text-muted mb-2">Всего: {{ focus_plan_summary.total }} · Выполнено: {{ focus_plan_summary.completed }}</div>
-                    <div class="d-flex flex-column gap-2">
-                        {% for item in focus_plan_summary.items|slice:":4" %}
-                            <div class="border rounded-3 p-2 {% if item.is_completed %}bg-light{% endif %}">
-                                <div class="fw-semibold {% if item.is_completed %}text-decoration-line-through text-muted{% endif %}">{{ item.title }}</div>
-                                <div class="small text-muted">{{ item.time_label }}</div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    {% if focus_subject %}
-                        <a href="{% url 'care-plan-subject' focus_subject.id %}" class="btn btn-outline-primary btn-sm mt-3">Открыть план</a>
-                    {% endif %}
-                {% else %}
-                    <div class="text-muted">На сегодня задач пока нет.</div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="j-card mb-4">
-            <div class="j-card-header">Последняя геоточка</div>
-            <div class="j-card-body">
-                {% if focus_last_location %}
-                    <div class="fw-semibold mb-1">{{ focus_last_location.latitude }}, {{ focus_last_location.longitude }}</div>
-                    <div class="small text-muted mb-2">{{ focus_last_location.captured_at|date:"d.m.Y H:i" }}</div>
-                    {% if focus_last_location.note %}
-                        <div class="small mb-3">{{ focus_last_location.note }}</div>
-                    {% endif %}
-                    {% if focus_subject %}
-                        <a href="{% url 'care-location-subject' focus_subject.id %}" class="btn btn-outline-primary btn-sm">История локации</a>
-                    {% endif %}
-                {% else %}
-                    <div class="text-muted">Геолокация ещё не передавалась.</div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="j-card mb-4">
-            <div class="j-card-header">Фитнес-браслет</div>
-            <div class="j-card-body">
-                {% if focus_wearable_summary %}
-                    <div class="small text-muted mb-2">{{ focus_wearable_summary.device.nickname }} · {{ focus_wearable_summary.summary_date|date:"d.m.Y" }}</div>
-                    <div class="row g-2">
-                        <div class="col-4"><div class="small text-muted">Шаги</div><div class="fw-semibold">{{ focus_wearable_summary.steps }}</div></div>
-                        <div class="col-4"><div class="small text-muted">Пульс</div><div class="fw-semibold">{{ focus_wearable_summary.average_heart_rate|default:"—" }}</div></div>
-                        <div class="col-4"><div class="small text-muted">Сон</div><div class="fw-semibold">{{ focus_wearable_summary.sleep_hours|default:"—" }}</div></div>
-                    </div>
-                {% else %}
-                    <div class="text-muted">Сводок с браслета пока нет.</div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="j-card mb-4">
-            <div class="j-card-header">Погода и воздух</div>
+            <div class="j-card-header">{% trans "Погода и воздух" %}</div>
             <div class="j-card-body">
                 {% if weather %}
                     <div class="d-flex justify-content-between align-items-start mb-3">
@@ -174,48 +114,29 @@
                         </div>
                     {% endwith %}
                 {% else %}
-                    <p class="text-muted mb-0">Погодный виджет появится после первого обновления из OpenWeatherMap.</p>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="j-card mb-4">
-            <div class="j-card-header">Куда можно сходить</div>
-            <div class="j-card-body">
-                {% if featured_places %}
-                    <div class="d-flex flex-column gap-3">
-                        {% for place in featured_places|slice:":3" %}
-                            <div class="border rounded-3 p-3">
-                                <div class="fw-semibold">{{ place.name }}</div>
-                                <div class="small text-muted">{{ place.category_label }}</div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <a href="{% url 'care-places' %}" class="btn btn-outline-primary btn-sm mt-3">Вся подборка</a>
-                {% else %}
-                    <div class="text-muted">Подборка мест появится здесь.</div>
+                    <p class="text-muted mb-0">{% trans "Погодный виджет появится после первого обновления из OpenWeatherMap." %}</p>
                 {% endif %}
             </div>
         </div>
 
         <div class="j-card">
-            <div class="j-card-header">Активные челленджи</div>
+            <div class="j-card-header">{% trans "Активные челленджи" %}</div>
             <div class="j-card-body">
                 {% if challenge_list %}
                     <div class="d-flex flex-column gap-3">
                         {% for challenge in challenge_list %}
                             <div class="border rounded-3 p-3">
                                 <div class="fw-semibold">{{ challenge.title }}</div>
-                                <div class="small text-muted mb-2">{{ challenge.description|default:"Семейный челлендж по активности" }}</div>
+                                <div class="small text-muted mb-2">{% if challenge.description %}{{ challenge.description }}{% else %}{% trans "Семейный челлендж по активности" %}{% endif %}</div>
                                 <div class="j-progress mb-2">
                                     <div class="j-progress-bar" style="width: {{ challenge.progress_pct }}%;"></div>
                                 </div>
-                                <div class="small text-muted">До конца: {{ challenge.days_left }} дн.</div>
+                                <div class="small text-muted">{% trans "До конца:" %} {{ challenge.days_left }} {% trans "дн." %}</div>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-muted mb-0">Челленджи пока не созданы. Их можно добавить следующей итерацией.</p>
+                    <p class="text-muted mb-0">{% trans "Челленджи пока не созданы." %}</p>
                 {% endif %}
             </div>
         </div>

@@ -1,0 +1,281 @@
+/* ============================================================
+   Special — Версия для слабовидящих (lidrekon.ru structure)
+   ============================================================ */
+
+/* ── Panel wrapper ── */
+#special {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  font-family: Arial, sans-serif;
+}
+#special.sp-open { display: block; }
+
+/* ── Main toolbar ── */
+.special-panel {
+  background: #f0f0f0;
+  border-bottom: 2px solid #888;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 5px 12px;
+  gap: 0;
+  min-height: 44px;
+}
+
+.special-panel > div {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 10px;
+  border-right: 1px solid #ccc;
+}
+.special-panel > div:last-child { border-right: none; }
+
+.special-panel span {
+  font-size: 12px;
+  color: #333;
+  white-space: nowrap;
+  margin-right: 5px;
+  font-weight: 600;
+}
+
+/* ── Buttons (panel) ── */
+.special-panel button {
+  background: #ddd;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 3px 8px;
+  font-size: 13px;
+  color: #222;
+  transition: background .15s;
+  font-family: Arial, sans-serif;
+  line-height: 1.4;
+}
+.special-panel button:hover  { background: #c8c8c8; }
+.special-panel button.active { background: #222; color: #fff; border-color: #222; }
+
+/* Font size: graduated */
+.special-font-size button:nth-of-type(1) i { font-size: 12px; font-style: normal; }
+.special-font-size button:nth-of-type(2) i { font-size: 16px; font-style: normal; }
+.special-font-size button:nth-of-type(3) i { font-size: 20px; font-style: normal; }
+
+/* Color swatches in toolbar */
+.special-panel .special-color button[value="1"] { background:#fff;     color:#000; }
+.special-panel .special-color button[value="2"] { background:#000;     color:#fff; border-color:#555; }
+.special-panel .special-color button[value="3"] { background:#9dd1ff;  color:#063462; }
+
+/* Icon buttons */
+.special-images button i,
+.special-audio  button i { font-style: normal; font-size: 14px; }
+
+.special-quit button {
+  background: #666;
+  color: #fff;
+  border-color: #555;
+  font-size: 12px;
+}
+.special-quit button:hover { background: #444; }
+
+/* ── Extended settings panel ── */
+#special-settings-body {
+  display: none;
+  background: #f5f5f5;
+  border-bottom: 2px solid #888;
+  padding: 14px 20px 16px;
+  font-family: Arial, sans-serif;
+}
+#special-settings-body.sp-settings-open { display: block; }
+
+#special-settings-body h2 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+
+#special-settings-body > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+#special-settings-body span {
+  font-size: 12px;
+  color: #555;
+  min-width: 220px;
+}
+
+/* Settings buttons */
+#special-settings-body button {
+  background: #ddd;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: #222;
+  font-family: Arial, sans-serif;
+  line-height: 1.4;
+  transition: background .15s;
+}
+#special-settings-body button i { font-style: normal; }
+#special-settings-body button:hover  { background: #c8c8c8; }
+#special-settings-body button.active { background: #222; color: #fff; border-color: #222; }
+
+/* Color swatches full set */
+#special-settings-body .special-color button[value="1"] { background:#fff;     color:#000; }
+#special-settings-body .special-color button[value="2"] { background:#000;     color:#fff; border-color:#555; }
+#special-settings-body .special-color button[value="3"] { background:#9dd1ff;  color:#063462; }
+#special-settings-body .special-color button[value="4"] { background:#f7f3d6;  color:#4d3b14; }
+#special-settings-body .special-color button[value="5"] { background:#3b2716;  color:#4aad5d; border-color:#5a4030; }
+
+.avtor { font-size: 11px; color: #aaa; margin-top: 4px; }
+.avtor a { color: #aaa; text-decoration: none; }
+
+/* ── Eye toggle button (in navbars) ── */
+.sp-eye-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: #6B7280;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: background .15s, color .15s;
+  font-family: inherit;
+}
+.sp-eye-btn:hover  { background: #F3F4F6; color: #111827; }
+.sp-eye-btn.active { background: #e8f7f2; color: #2D9D78; }
+.sp-eye-btn i { font-size: 16px; flex-shrink: 0; }
+
+/* Subject bottom nav eye tab */
+.j-subject-bottomnav .sp-eye-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 4px;
+  color: #6B7280;
+  text-decoration: none;
+  font-size: 11px;
+  gap: 4px;
+  transition: color .15s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.j-subject-bottomnav .sp-eye-tab i { font-size: 22px; }
+.j-subject-bottomnav .sp-eye-tab.active { color: #2D9D78; }
+
+/* ── Offset layout when panel open ── */
+body.sp-open .j-sidebar  { top: var(--sp-h, 50px); }
+body.sp-open .j-topbar   { top: var(--sp-h, 50px); }
+body.sp-open .j-subject-layout { padding-top: var(--sp-h, 50px); }
+/* fallback for observer: push main content */
+body.sp-open .j-main     { padding-top: var(--sp-h, 50px); }
+
+/* ════════════════════════════════════════
+   COLOR SCHEMES
+   ════════════════════════════════════════ */
+
+/* 1 = default (no class needed) */
+
+/* 2 = white on black */
+body.sp-c2                          { background:#000!important; color:#fff!important; }
+body.sp-c2 .j-card,
+body.sp-c2 .j-metric-card,
+body.sp-c2 .j-member-card,
+body.sp-c2 .j-sidebar,
+body.sp-c2 .j-topbar,
+body.sp-c2 .j-subject-topbar,
+body.sp-c2 .j-subject-bottomnav,
+body.sp-c2 .j-a11y-panel,
+body.sp-c2 .modal-content,
+body.sp-c2 .j-nav-link             { background:#111!important; color:#eee!important; border-color:#444!important; }
+body.sp-c2 a                        { color:#6ee7c2!important; }
+body.sp-c2 .text-muted              { color:#aaa!important; }
+body.sp-c2 .j-nav-link:hover,
+body.sp-c2 .j-nav-link.active       { background:#333!important; }
+
+/* 3 = dark-blue on light-blue */
+body.sp-c3                          { background:#9dd1ff!important; color:#063462!important; }
+body.sp-c3 .j-card,
+body.sp-c3 .j-metric-card,
+body.sp-c3 .j-sidebar,
+body.sp-c3 .j-topbar,
+body.sp-c3 .j-subject-topbar,
+body.sp-c3 .j-subject-bottomnav,
+body.sp-c3 .modal-content           { background:#c2e2ff!important; color:#063462!important; border-color:#5aabf5!important; }
+body.sp-c3 a                        { color:#063462!important; text-decoration:underline!important; }
+
+/* 4 = brown on beige */
+body.sp-c4                          { background:#f7f3d6!important; color:#4d3b14!important; }
+body.sp-c4 .j-card,
+body.sp-c4 .j-metric-card,
+body.sp-c4 .j-sidebar,
+body.sp-c4 .j-topbar,
+body.sp-c4 .j-subject-topbar,
+body.sp-c4 .j-subject-bottomnav,
+body.sp-c4 .modal-content           { background:#fdf9e8!important; color:#4d3b14!important; border-color:#c9b98a!important; }
+body.sp-c4 a                        { color:#7a5c1e!important; }
+
+/* 5 = green on dark-brown */
+body.sp-c5                          { background:#3b2716!important; color:#4aad5d!important; }
+body.sp-c5 .j-card,
+body.sp-c5 .j-metric-card,
+body.sp-c5 .j-sidebar,
+body.sp-c5 .j-topbar,
+body.sp-c5 .j-subject-topbar,
+body.sp-c5 .j-subject-bottomnav,
+body.sp-c5 .modal-content           { background:#2a1a0e!important; color:#4aad5d!important; border-color:#5a4030!important; }
+body.sp-c5 a                        { color:#6fd68a!important; }
+
+/* ════════════════════════════════════════
+   FONT SIZES
+   ════════════════════════════════════════ */
+body.sp-f2             { font-size: 19px!important; }
+body.sp-f3             { font-size: 23px!important; }
+body.sp-f2 .j-metric-value { font-size: 38px!important; }
+body.sp-f3 .j-metric-value { font-size: 46px!important; }
+body.sp-f2 .j-nav-link,
+body.sp-f2 .j-subject-bottomnav a { font-size: 16px!important; }
+body.sp-f3 .j-nav-link,
+body.sp-f3 .j-subject-bottomnav a { font-size: 20px!important; }
+
+/* ════════════════════════════════════════
+   FONT FAMILY
+   ════════════════════════════════════════ */
+body.sp-ff2 *  { font-family: 'Times New Roman', serif!important; }
+
+/* ════════════════════════════════════════
+   LETTER SPACING
+   ════════════════════════════════════════ */
+body.sp-ls2 *  { letter-spacing: 2px!important; }
+body.sp-ls3 *  { letter-spacing: 4px!important; }
+
+/* ════════════════════════════════════════
+   LINE HEIGHT
+   ════════════════════════════════════════ */
+body.sp-lh2 *  { line-height: 2.0!important; }
+body.sp-lh3 *  { line-height: 2.8!important; }
+
+/* ════════════════════════════════════════
+   IMAGES HIDDEN
+   ════════════════════════════════════════ */
+body.sp-noimages img { visibility: hidden!important; }

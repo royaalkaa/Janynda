@@ -1,0 +1,581 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-03 14:28+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: templates/accounts/login.html:4 templates/accounts/login.html:13
+msgid "Вход"
+msgstr "Кіру"
+
+#: templates/accounts/login.html:14
+msgid "Войдите по email, чтобы открыть дашборд семьи."
+msgstr "Отбасылық бақылау тақтасын ашу үшін электрондық поштаңызбен кіріңіз."
+
+#: templates/accounts/login.html:27 templates/accounts/signup.html:33
+#: templates/dashboard/landing.html:20
+msgid "Войти"
+msgstr "Жүйеге кіру"
+
+#: templates/accounts/login.html:30
+msgid "Нет аккаунта?"
+msgstr "Есептік жазбаңыз жоқ па?"
+
+#: templates/accounts/login.html:30
+msgid "Создать"
+msgstr "Жасау"
+
+#: templates/accounts/signup.html:4
+msgid "Регистрация"
+msgstr "Тіркеу"
+
+#: templates/accounts/signup.html:13
+msgid "Создание аккаунта"
+msgstr "Тіркелгі жасау"
+
+#: templates/accounts/signup.html:14
+msgid "После регистрации сразу перейдём в onboarding."
+msgstr "Тіркеуден кейін біз бірден борттыққа көшеміз."
+
+#: templates/accounts/signup.html:30 templates/dashboard/landing.html:19
+msgid "Создать аккаунт"
+msgstr "Аккаунты құру"
+
+#: templates/accounts/signup.html:33
+msgid "Уже есть аккаунт?"
+msgstr "Есептік жазбаңыз әлдеқашан бар ма?"
+
+#: templates/base/base.html:45
+msgid "Вызов помощи"
+msgstr "Көмекке қоңырау шалыңыз"
+
+#: templates/base/base.html:51
+msgid "Вам нужна помощь?"
+msgstr "Сізге көмек керек пе?"
+
+#: templates/base/base.html:52
+msgid ""
+"Уведомление будет отправлено вашим наблюдателям и контакту экстренной "
+"помощи."
+msgstr ""
+"Сіздің жетекшілеріңізге және төтенше жағдай контактісіне хабарландыру "
+"жіберіледі."
+
+#: templates/base/base.html:56
+msgid "Отмена"
+msgstr "Болдырмау"
+
+#: templates/base/base.html:63
+msgid "Отправить SOS"
+msgstr "SOS жіберу"
+
+#: templates/base/base.html:71
+msgid "Настройки доступности"
+msgstr "Арнайы мүмкіндіктер параметрлері"
+
+#: templates/base/base.html:74
+msgid "Панель доступности"
+msgstr "Арнайы мүмкіндіктер тақтасы"
+
+#: templates/base/base.html:75
+msgid "Размер текста"
+msgstr "Мәтін өлшемі"
+
+#: templates/base/base.html:77
+msgid "Обычный"
+msgstr "Кәдімгі"
+
+#: templates/base/base.html:78
+msgid "Большой"
+msgstr "Үлкен"
+
+#: templates/base/base.html:79
+msgid "Очень большой"
+msgstr "Өте үлкен"
+
+#: templates/base/base.html:81
+msgid "Контраст"
+msgstr "Контраст"
+
+#: templates/base/base.html:84
+msgid "Высокий контраст"
+msgstr "Жоғары контраст"
+
+#: templates/base/observer.html:25
+msgid "Наблюдающий режим"
+msgstr "Бақылаушы режимі"
+
+#: templates/base/observer.html:29
+msgid "Основное"
+msgstr "Негіздер"
+
+#: templates/base/observer.html:31
+msgid "Дашборд"
+msgstr "Бақылау тақтасы"
+
+#: templates/base/observer.html:35
+msgid "Мой режим"
+msgstr "Менің режимім"
+
+#: templates/base/observer.html:39
+msgid "Семья"
+msgstr "Отбасы"
+
+#: templates/base/observer.html:42
+msgid "Челленджи"
+msgstr "Қиындықтар"
+
+#: templates/base/observer.html:44
+msgid "Сервисы"
+msgstr "Қызметтер"
+
+#: templates/base/observer.html:46 templates/notifications/list.html:4
+#: templates/notifications/list.html:5
+msgid "Уведомления"
+msgstr "Хабарландырулар"
+
+#: templates/base/observer.html:52
+msgid "Погода"
+msgstr "Ауа райы"
+
+#: templates/base/observer.html:55
+msgid "AI-помощник"
+msgstr "AI көмекшісі"
+
+#: templates/base/observer.html:58 templates/base/subject.html:41
+#: templates/payment/index.html:4 templates/payment/index.html:5
+msgid "Оплата"
+msgstr "Төлем"
+
+#: templates/base/observer.html:62
+msgid "Язык"
+msgstr "Тіл"
+
+#: templates/base/observer.html:77 templates/base/subject.html:24
+msgid "Выйти"
+msgstr "Шығу"
+
+#: templates/base/observer.html:85
+#: templates/dashboard/observer_dashboard.html:4
+#: templates/dashboard/observer_dashboard.html:5
+msgid "Панель наблюдения"
+msgstr "Бақылау тақтасы"
+
+#: templates/base/observer.html:86
+msgid "Семья, алерты и ключевые метрики в одном месте"
+msgstr "Отбасы, ескертулер және негізгі көрсеткіштер бір жерде"
+
+#: templates/base/subject.html:33
+msgid "Главная"
+msgstr "Үй"
+
+#: templates/base/subject.html:37
+#: templates/dashboard/observer_dashboard.html:64
+msgid "История"
+msgstr "Әңгіме"
+
+#: templates/dashboard/landing.html:11
+msgid "Следите за здоровьем близких без перегруза интерфейсом"
+msgstr ""
+"Интерфейсті шамадан тыс жүктеместен жақындарыңыздың денсаулығын бақылаңыз"
+
+#: templates/dashboard/landing.html:13
+msgid ""
+"Janynda помогает семье видеть давление, пульс, шаги, погодные риски и "
+"быстрые AI-комментарии в одном белом, понятном дашборде."
+msgstr ""
+"Janynda отбасыларға қан қысымын, жүрек соғу жиілігін, қадамдарды, ауа райы "
+"қаупін және жылдам AI түсініктемелерін бір ақ, анық бақылау тақтасында "
+"көруге көмектеседі."
+
+#: templates/dashboard/landing.html:17
+msgid "Открыть дашборд"
+msgstr "Бақылау тақтасын ашыңыз"
+
+#: templates/dashboard/landing.html:28
+#: templates/dashboard/subject_dashboard.html:19
+msgid "Давление"
+msgstr "Қысым"
+
+#: templates/dashboard/landing.html:28
+msgid "Последняя запись 20 минут назад"
+msgstr "Соңғы пост 20 минут бұрын"
+
+#: templates/dashboard/landing.html:32
+#: templates/dashboard/subject_dashboard.html:20
+#: templates/dashboard/subject_dashboard.html:71
+msgid "Пульс"
+msgstr "Импульс"
+
+#: templates/dashboard/landing.html:32
+msgid "Требуется наблюдение"
+msgstr "Бақылау қажет"
+
+#: templates/dashboard/landing.html:36
+#: templates/dashboard/subject_dashboard.html:21
+msgid "Шаги"
+msgstr "Қадамдар"
+
+#: templates/dashboard/landing.html:36
+msgid "До цели осталось 1 160"
+msgstr "Мақсатқа жету үшін 1160 қалды"
+
+#: templates/dashboard/landing.html:36
+msgid "сегодня"
+msgstr "Бүгін"
+
+#: templates/dashboard/landing.html:40
+msgid "Воздух"
+msgstr "Ауа"
+
+#: templates/dashboard/landing.html:40
+msgid "Лучше перенести прогулку"
+msgstr "Жаяу жүруді қайта жоспарлау керек"
+
+#: templates/dashboard/observer_dashboard.html:6
+msgid "Семья, статусы и первые сигналы риска"
+msgstr "Отбасы, мәртебелер және тәуекелдің алғашқы белгілері"
+
+#: templates/dashboard/observer_dashboard.html:13
+msgid "Состояние семьи"
+msgstr "Отбасы жағдайы"
+
+#: templates/dashboard/observer_dashboard.html:14
+msgid "Карточки показывают последний статус по каждому близкому."
+msgstr "Карталар әрбір жақын адам үшін соңғы күйді көрсетеді."
+
+#: templates/dashboard/observer_dashboard.html:16
+#: templates/dashboard/observer_dashboard.html:77
+msgid "Добавить родственника"
+msgstr "Туысқанды қосыңыз"
+
+#: templates/dashboard/observer_dashboard.html:34
+msgid "Последняя запись:"
+msgstr "Соңғы жазба:"
+
+#: templates/dashboard/observer_dashboard.html:36
+msgid "Пока нет записей"
+msgstr "Әзірге жазбалар жоқ"
+
+#: templates/dashboard/observer_dashboard.html:41
+#: templates/health/history.html:43
+msgid "Критично"
+msgstr "Сыни"
+
+#: templates/dashboard/observer_dashboard.html:41
+#: templates/health/history.html:43
+msgid "Внимание"
+msgstr "Назар аударыңыз"
+
+#: templates/dashboard/observer_dashboard.html:41
+#: templates/health/history.html:43
+msgid "Норма"
+msgstr "Норма"
+
+#: templates/dashboard/observer_dashboard.html:41
+msgid "Нет данных"
+msgstr "Деректер жоқ"
+
+#: templates/dashboard/observer_dashboard.html:56
+msgid "Попросите родственника внести первые показатели через magic link."
+msgstr ""
+"Туысқаныңыздан сиқырлы сілтеме арқылы бірінші көрсеткіштерді енгізуді "
+"сұраңыз."
+
+#: templates/dashboard/observer_dashboard.html:67
+msgid "Magic link активен"
+msgstr "Сиқырлы сілтеме белсенді"
+
+#: templates/dashboard/observer_dashboard.html:75
+msgid "Семья пока не собрана"
+msgstr "Отбасы әлі жиналған жоқ"
+
+#: templates/dashboard/observer_dashboard.html:76
+msgid ""
+"Добавьте первого родственника, чтобы увидеть его карточку, magic link и "
+"статусы на дашборде."
+msgstr ""
+"Бақылау тақтасында оның картасын, сиқырлы сілтемесін және күйлерін көру үшін"
+" бірінші туысқаныңызды қосыңыз."
+
+#: templates/dashboard/observer_dashboard.html:84
+msgid "AI-комментарий"
+msgstr "AI түсініктемесі"
+
+#: templates/dashboard/observer_dashboard.html:92
+msgid "Комментарий появится после первой записи метрик."
+msgstr "Түсініктеме метриканың бірінші жазбасынан кейін пайда болады."
+
+#: templates/dashboard/observer_dashboard.html:98
+msgid "Погода и воздух"
+msgstr "Ауа-райы және ауа"
+
+#: templates/dashboard/observer_dashboard.html:117
+msgid "Погодный виджет появится после первого обновления из OpenWeatherMap."
+msgstr ""
+"Ауа райы виджеті OpenWeatherMap қолданбасының бірінші жаңартуынан кейін "
+"пайда болады."
+
+#: templates/dashboard/observer_dashboard.html:123
+msgid "Активные челленджи"
+msgstr "Белсенді сынақтар"
+
+#: templates/dashboard/observer_dashboard.html:130
+msgid "Семейный челлендж по активности"
+msgstr "Отбасылық белсенділік мәселесі"
+
+#: templates/dashboard/observer_dashboard.html:134
+msgid "До конца:"
+msgstr "Соңына дейін:"
+
+#: templates/dashboard/observer_dashboard.html:134
+msgid "дн."
+msgstr "күндер"
+
+#: templates/dashboard/observer_dashboard.html:139
+msgid "Челленджи пока не созданы."
+msgstr "Сынақтар әлі жасалмаған."
+
+#: templates/dashboard/subject_dashboard.html:4
+msgid "Мои показатели"
+msgstr "Менің көрсеткіштерім"
+
+#: templates/dashboard/subject_dashboard.html:8
+msgid "Здравствуйте"
+msgstr "Сәлем"
+
+#: templates/dashboard/subject_dashboard.html:9
+msgid "Быстрый ввод ниже занимает меньше 30 секунд."
+msgstr "Төмендегі жылдам енгізу 30 секундтан аз уақытты алады."
+
+#: templates/dashboard/subject_dashboard.html:22
+msgid "Ещё не вводили"
+msgstr "Әлі енгізілген жоқ"
+
+#: templates/dashboard/subject_dashboard.html:57
+msgid "Быстрый ввод давления"
+msgstr "Қысымды жылдам енгізу"
+
+#: templates/dashboard/subject_dashboard.html:63
+msgid "Систолическое"
+msgstr "Систоликалық"
+
+#: templates/dashboard/subject_dashboard.html:67
+msgid "Диастолическое"
+msgstr "Диастолалық"
+
+#: templates/dashboard/subject_dashboard.html:74
+msgid "Сохранить давление"
+msgstr "Қысымды сақтаңыз"
+
+#: templates/dashboard/subject_dashboard.html:81
+msgid "Быстрый ввод шагов"
+msgstr "Қадамдарды жылдам енгізіңіз"
+
+#: templates/dashboard/subject_dashboard.html:87
+msgid "Шагов за день"
+msgstr "Күніне қадамдар"
+
+#: templates/dashboard/subject_dashboard.html:90
+msgid "Сохранить шаги"
+msgstr "Қадамдарды сақтаңыз"
+
+#: templates/dashboard/subject_dashboard.html:99
+msgid "Быстрый ввод пульса"
+msgstr "Жылдам жүрек соғу жылдамдығын енгізу"
+
+#: templates/dashboard/subject_dashboard.html:105
+msgid "Ударов в минуту"
+msgstr "Минутына соғу саны"
+
+#: templates/dashboard/subject_dashboard.html:108
+msgid "Сохранить пульс"
+msgstr "Импульсті сақтау"
+
+#: templates/dashboard/subject_dashboard.html:115
+msgid "Мои наблюдатели"
+msgstr "Менің бақылаушыларым"
+
+#: templates/dashboard/subject_dashboard.html:122
+msgid "Видит ваши показатели и уведомления по рискам."
+msgstr "Индикаторларыңызды және тәуекел туралы хабарландыруларды көреді."
+
+#: templates/dashboard/subject_dashboard.html:127
+msgid "Пока никто не подключён как наблюдатель."
+msgstr "Әзірге ешкім бақылаушы ретінде қосылған жоқ."
+
+#: templates/dashboard/subject_dashboard.html:137
+msgid "Шаги за 7 дней"
+msgstr "7 күндегі қадамдар"
+
+#: templates/dashboard/subject_dashboard.html:147
+msgid "Давление за последние записи"
+msgstr "Соңғы жазбалар үшін қысым"
+
+#: templates/health/history.html:4 templates/health/history.html:9
+msgid "История метрик"
+msgstr "Метрикалардың тарихы"
+
+#: templates/health/history.html:14
+msgid "Все метрики"
+msgstr "Барлық көрсеткіштер"
+
+#: templates/health/history.html:19
+msgid "Фильтр"
+msgstr "Сүзгі"
+
+#: templates/health/history.html:30
+msgid "Метрика"
+msgstr "Көрсеткіштер"
+
+#: templates/health/history.html:31
+msgid "Значение"
+msgstr "Мағынасы"
+
+#: templates/health/history.html:32
+msgid "Статус"
+msgstr "Күй"
+
+#: templates/health/history.html:33
+msgid "Дата"
+msgstr "Күн"
+
+#: templates/health/history.html:53
+msgid "История пока пустая"
+msgstr "Әңгіме әлі бос"
+
+#: templates/health/history.html:54
+msgid "После первых записей здесь появится динамика показателей."
+msgstr ""
+"Алғашқы жазбалардан кейін мұнда көрсеткіштердің динамикасы пайда болады."
+
+#: templates/notifications/list.html:6
+msgid "Все сигналы по здоровью, погоде и активности семьи"
+msgstr ""
+"Денсаулық, ауа-райы және отбасылық белсенділік туралы барлық сигналдар"
+
+#: templates/notifications/list.html:10
+msgid "Центр уведомлений"
+msgstr "Хабарландыру орталығы"
+
+#: templates/notifications/list.html:13
+msgid "Отметить всё как прочитанное"
+msgstr "Барлығын оқылған деп белгілеңіз"
+
+#: templates/notifications/list.html:26
+msgid "Новое"
+msgstr "Жаңа"
+
+#: templates/notifications/list.html:35
+msgid "Прочитано"
+msgstr "Оқы"
+
+#: templates/notifications/list.html:41
+msgid "Уведомлений пока нет"
+msgstr "Әзірге хабарландырулар жоқ"
+
+#: templates/notifications/list.html:42
+msgid ""
+"Как только появятся алерты или напоминания, они будут собираться здесь."
+msgstr ""
+"Ескертулер немесе еске салғыштар пайда болғаннан кейін олар осында жиналады."
+
+#: templates/payment/index.html:6
+msgid "Kaspi QR и сканирование платёжных кодов"
+msgstr "Kaspi QR және сканерлеу төлем кодтары"
+
+#: templates/payment/index.html:49
+msgid "Оплатить подписку"
+msgstr "Жазылым үшін төлеңіз"
+
+#: templates/payment/index.html:52
+msgid "Сканировать QR"
+msgstr "QR сканерлеу"
+
+#: templates/payment/index.html:60
+msgid "Kaspi QR — оплата подписки"
+msgstr ""
+
+#: templates/payment/index.html:64
+msgid ""
+"Отсканируйте QR-код через приложение Kaspi и оплатите подписку Janynda."
+msgstr ""
+"Kaspi қолданбасы арқылы QR кодын сканерлеңіз және Janynda жазылымын төлеңіз."
+
+#: templates/payment/index.html:74
+msgid "QR не сгенерирован — установите пакет qrcode."
+msgstr "QR жасалмады - qrcode бумасын орнатыңыз."
+
+#: templates/payment/index.html:87
+msgid "Открыть в браузере"
+msgstr "Браузерде ашыңыз"
+
+#: templates/payment/index.html:95
+msgid "Как оплатить:"
+msgstr "Қалай төлеуге болады:"
+
+#: templates/payment/index.html:96
+msgid "1. Откройте Kaspi.kz или Kaspi Gold"
+msgstr "1. Kaspi.kz немесе Kaspi Gold ашыңыз"
+
+#: templates/payment/index.html:97
+msgid "2. Нажмите «Оплатить» → «По QR»"
+msgstr "2. «Төлеу» → «QR арқылы» түймесін басыңыз."
+
+#: templates/payment/index.html:98
+msgid "3. Отсканируйте код выше"
+msgstr "3. Жоғарыдағы кодты сканерлеңіз"
+
+#: templates/payment/index.html:107
+msgid "Сканировать QR с фото или камеры"
+msgstr "Фотосуреттен немесе камерадан QR сканерлеу"
+
+#: templates/payment/index.html:111
+msgid ""
+"Загрузите фотографию QR-кода или используйте камеру устройства для "
+"сканирования."
+msgstr ""
+"QR кодының фотосуретін жүктеп салыңыз немесе оны сканерлеу үшін құрылғы "
+"камерасын пайдаланыңыз."
+
+#: templates/payment/index.html:117
+msgid "Камера"
+msgstr "Камера"
+
+#: templates/payment/index.html:120
+msgid "Загрузить фото"
+msgstr "Фотосуретті жүктеп салу"
+
+#: templates/payment/index.html:132
+msgid "QR считан:"
+msgstr "QR оқылады:"
+
+#: templates/payment/index.html:138
+msgid "Открыть ссылку"
+msgstr "Сілтемені ашу"
+
+#: templates/payment/index.html:141
+msgid "Сбросить"
+msgstr "Қалпына келтіру"
+
+#: templates/payment/index.html:175
+msgid "Не удалось получить доступ к камере"
+msgstr "Камераға кіру мүмкін болмады"
+
+#: templates/payment/index.html:194
+msgid "QR не найден на фото"
+msgstr "Фотосуретте QR табылмады"

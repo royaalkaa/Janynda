@@ -524,29 +524,22 @@ body {
 
 /* --- Quick Entry Form (Subject) --------------------------- */
 .j-quick-entry {
-  width: 100%;
-  max-width: 560px;
+  max-width: 420px;
   margin: 0 auto;
 }
 .j-quick-entry .j-field-group {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  display: flex;
   gap: 12px;
   margin-bottom: 16px;
 }
-.j-quick-entry .j-field-group > * {
-  min-width: 0;
-}
 .j-metric-input {
-  width: 100%;
-  min-width: 0;
+  flex: 1;
   text-align: center;
   font-size: 24px;
   font-weight: 700;
   border: 2px solid var(--j-border);
   border-radius: var(--j-radius);
   padding: 16px 12px 8px;
-  box-sizing: border-box;
   transition: border-color 0.2s;
   -moz-appearance: textfield;
 }
@@ -594,26 +587,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 110;
 }
 .j-subject-topbar .brand { font-size: 18px; font-weight: 700; color: var(--j-primary); }
-.j-subject-content {
-  padding: 24px 16px calc(92px + env(safe-area-inset-bottom, 0px));
-  flex: 1;
-}
+.j-subject-content { padding: 24px 16px; flex: 1; }
 .j-subject-bottomnav {
   background: var(--j-surface);
   border-top: 1px solid var(--j-border);
   display: flex;
-  position: fixed;
-  left: 0;
-  right: 0;
+  position: sticky;
   bottom: 0;
-  z-index: 120;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  box-shadow: 0 -8px 20px rgba(17, 24, 39, 0.08);
 }
 .j-subject-bottomnav a {
   flex: 1;
@@ -644,5 +626,185 @@ body {
   .j-main { margin-left: 0; }
   .j-content { padding: 16px; }
   .j-metric-value { font-size: 22px; }
-  .j-subject-content { padding: 16px 12px calc(96px + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* ============================================================
+   SOS Floating Action Button
+   ============================================================ */
+.j-sos-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--j-danger);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 20px rgba(214,59,59,0.50), 0 0 0 0 rgba(214,59,59,0.4);
+  cursor: pointer;
+  z-index: 1040;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  gap: 2px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: j-sos-pulse 2.5s infinite;
+}
+.j-sos-fab i { font-size: 26px; line-height: 1; }
+.j-sos-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 32px rgba(214,59,59,0.65);
+  animation: none;
+}
+.j-sos-fab:active { transform: scale(0.95); }
+
+/* В subject-layout (с нижней навигацией) — поднять выше */
+.j-subject-layout .j-sos-fab {
+  bottom: calc(60px + 20px);
+}
+
+@keyframes j-sos-pulse {
+  0%   { box-shadow: 0 4px 20px rgba(214,59,59,0.50), 0 0 0 0 rgba(214,59,59,0.4); }
+  70%  { box-shadow: 0 4px 20px rgba(214,59,59,0.50), 0 0 0 14px rgba(214,59,59,0); }
+  100% { box-shadow: 0 4px 20px rgba(214,59,59,0.50), 0 0 0 0 rgba(214,59,59,0); }
+}
+
+.j-sos-sent {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--j-success);
+  font-weight: 600;
+  font-size: 15px;
+  padding: 4px 0;
+}
+
+/* ============================================================
+   Accessibility Panel (слабовидящие)
+   ============================================================ */
+.j-a11y-toggle {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--j-surface);
+  border: 2px solid var(--j-border);
+  color: var(--j-text-muted);
+  cursor: pointer;
+  z-index: 1040;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: var(--j-shadow);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.j-a11y-toggle:hover,
+.j-a11y-toggle.active {
+  background: var(--j-primary);
+  color: #fff;
+  border-color: var(--j-primary);
+}
+
+.j-subject-layout .j-a11y-toggle {
+  bottom: calc(60px + 20px);
+}
+
+.j-a11y-panel {
+  position: fixed;
+  bottom: 82px;
+  left: 24px;
+  background: var(--j-surface);
+  border: 1px solid var(--j-border);
+  border-radius: var(--j-radius);
+  box-shadow: var(--j-shadow-lg);
+  padding: 16px;
+  z-index: 1041;
+  min-width: 200px;
+  display: none;
+}
+.j-a11y-panel.open { display: block; }
+
+.j-subject-layout .j-a11y-panel {
+  bottom: calc(60px + 78px);
+}
+
+.j-a11y-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--j-text-muted);
+  margin-bottom: 8px;
+}
+.j-a11y-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.j-a11y-btn {
+  flex: 1;
+  border: 1.5px solid var(--j-border);
+  background: var(--j-surface);
+  border-radius: var(--j-radius-sm);
+  padding: 6px 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  color: var(--j-text);
+}
+.j-a11y-btn:hover,
+.j-a11y-btn.active {
+  background: var(--j-primary);
+  border-color: var(--j-primary);
+  color: #fff;
+}
+.j-a11y-btn.contrast-btn {
+  width: 100%;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* High Contrast Mode */
+body.j-hc {
+  --j-bg:      #000 !important;
+  --j-surface: #111 !important;
+  --j-text:    #fff !important;
+  --j-text-muted: #ccc !important;
+  --j-border:  #555 !important;
+  background:  #000 !important;
+  color:       #fff !important;
+}
+body.j-hc .j-card,
+body.j-hc .j-metric-card,
+body.j-hc .j-member-card,
+body.j-hc .j-sidebar,
+body.j-hc .j-topbar,
+body.j-hc .j-subject-topbar,
+body.j-hc .j-subject-bottomnav,
+body.j-hc .j-a11y-panel,
+body.j-hc .j-a11y-toggle {
+  background: #111 !important;
+  border-color: #555 !important;
+  color: #fff !important;
+}
+body.j-hc .j-nav-link { color: #ccc; }
+body.j-hc .j-nav-link.active,
+body.j-hc .j-nav-link:hover { background: #333; color: #fff; }
+body.j-hc a { color: #6ee7c2; }
+
+/* Font size levels */
+body.j-font-lg  { font-size: 18px !important; }
+body.j-font-xl  { font-size: 22px !important; }
+body.j-font-lg  .j-metric-value { font-size: 36px !important; }
+body.j-font-xl  .j-metric-value { font-size: 44px !important; }
