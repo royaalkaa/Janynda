@@ -1,7 +1,9 @@
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.conf import settings
@@ -20,7 +22,14 @@ def notification_list_view(request):
 def notification_read_view(request, pk):
     notification = get_object_or_404(Notification, pk=pk, recipient=request.user)
     notification.mark_read()
-    return redirect(request.META.get("HTTP_REFERER", "notifications-list"))
+    redirect_to = request.META.get("HTTP_REFERER")
+    if not redirect_to or not url_has_allowed_host_and_scheme(
+        redirect_to,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        redirect_to = reverse("notifications-list")
+    return redirect(redirect_to)
 
 
 @login_required

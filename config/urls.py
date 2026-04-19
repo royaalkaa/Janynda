@@ -15,6 +15,7 @@ urlpatterns = [
     path("notifications/", include("apps.notifications.urls")),
     path("weather/", include("apps.weather.urls")),
     path("ai/", include("apps.ai_assistant.urls")),
+    path("care/", include("apps.care.urls")),
     path("payment/", include("apps.payment.urls")),
     path("i18n/", include("django.conf.urls.i18n")),
     path("entry/<uuid:token>/", include("apps.accounts.urls_magic")),

@@ -89,3 +89,54 @@ class AIMessage(models.Model):
 
     def __str__(self):
         return f"[{self.role}] {self.content[:60]}"
+
+
+class VoiceCommandLog(models.Model):
+    class ActionType(models.TextChoices):
+        ANSWER = "answer", "РћС‚РІРµС‚"
+        PLAN_QUERY = "plan_query", "Р—Р°РїСЂРѕСЃ РїР»Р°РЅР°"
+        PLAN_COMPLETE = "plan_complete", "РћС‚РјРµС‚РєР° РїР»Р°РЅР°"
+        MEDICATION_LOG = "medication_log", "Р›РµРєР°СЂСЃС‚РІРѕ"
+        DOCTOR_LOG = "doctor_log", "Р’РёР·РёС‚ Рє РІСЂР°С‡Сѓ"
+        METRIC_LOG = "metric_log", "Р›РѕРі РјРµС‚СЂРёРєРё"
+        REMINDER = "reminder", "РќР°РїРѕРјРёРЅР°РЅРёРµ"
+        CANCELLED = "cancelled", "РћС‚РјРµРЅРµРЅРѕ"
+        UNSUPPORTED = "unsupported", "РќРµ СЂР°СЃРїРѕР·РЅР°РЅРѕ"
+
+    user = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.CASCADE,
+        related_name="voice_command_logs",
+    )
+    subject = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.CASCADE,
+        related_name="voice_command_subject_logs",
+    )
+    transcript = models.TextField()
+    response_text = models.TextField()
+    action_type = models.CharField(
+        max_length=20,
+        choices=ActionType.choices,
+        default=ActionType.ANSWER,
+    )
+    payload = models.JSONField(default=dict, blank=True)
+    requires_confirmation = models.BooleanField(default=False)
+    confirmed = models.BooleanField(default=False)
+    is_system_message = models.BooleanField(default=False)
+    is_read = models.BooleanField(default=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        verbose_name = "Р“РѕР»РѕСЃРѕРІР°СЏ РєРѕРјР°РЅРґР°"
+        verbose_name_plural = "Р“РѕР»РѕСЃРѕРІС‹Рµ РєРѕРјР°РЅРґС‹"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user} -> {self.action_type} ({self.created_at:%d.%m.%Y %H:%M})"
+
+    def mark_read(self):
+        if self.is_read:
+            return
+        self.is_read = True
+        self.save(update_fields=["is_read"])

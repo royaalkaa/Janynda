@@ -36,6 +36,7 @@ LOCAL_APPS = [
     "apps.weather",
     "apps.notifications",
     "apps.ai_assistant",
+    "apps.care",
     "apps.challenges",
     "apps.dashboard",
     "apps.payment",

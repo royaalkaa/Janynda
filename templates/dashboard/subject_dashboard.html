@@ -52,11 +52,12 @@
 </div>
 
 <div class="row g-4">
-    <div class="col-lg-6">
+    <div class="col-lg-4">
         <div class="j-card mb-4">
             <div class="j-card-header">{% trans "Быстрый ввод давления" %}</div>
             <div class="j-card-body">
                 <form hx-post="{% url 'health-quick-entry' 'blood_pressure' %}" hx-target="#bp-result" hx-swap="innerHTML" class="j-quick-entry">
+                    {% csrf_token %}
                     <div class="j-field-group">
                         <div class="flex-fill">
                             <input type="number" name="systolic" class="j-metric-input" placeholder="120" required>
@@ -81,6 +82,7 @@
             <div class="j-card-header">{% trans "Быстрый ввод шагов" %}</div>
             <div class="j-card-body">
                 <form hx-post="{% url 'health-quick-entry' 'steps' %}" hx-target="#steps-result" hx-swap="innerHTML" class="j-quick-entry">
+                    {% csrf_token %}
                     <div class="j-field-group">
                         <div class="flex-fill">
                             <input type="number" name="steps" class="j-metric-input" placeholder="6800" required>
@@ -94,11 +96,12 @@
         </div>
     </div>
 
-    <div class="col-lg-6">
+    <div class="col-lg-4">
         <div class="j-card mb-4">
             <div class="j-card-header">{% trans "Быстрый ввод пульса" %}</div>
             <div class="j-card-body">
                 <form hx-post="{% url 'health-quick-entry' 'heart_rate' %}" hx-target="#hr-result" hx-swap="innerHTML" class="j-quick-entry">
+                    {% csrf_token %}
                     <div class="j-field-group">
                         <div class="flex-fill">
                             <input type="number" name="bpm" class="j-metric-input" placeholder="72" required>
@@ -153,11 +156,24 @@
         </div>
     </div>
 </div>
+<div class="row g-4 mt-1">
+    <div class="col-12">
+        <div class="j-card">
+            <div class="j-card-header">{{ t_hr }}</div>
+            <div class="j-card-body">
+                <div class="j-chart-container" style="height: 260px;">
+                    <canvas id="heart-rate-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
     JanyndaCharts.renderStepsChart("steps-chart", {{ chart_payload.labels_json|safe }}, {{ chart_payload.steps_json|safe }});
     JanyndaCharts.renderBloodPressureChart("bp-chart", {{ chart_payload.bp_json|safe }});
+    JanyndaCharts.renderHeartRateChart("heart-rate-chart", {{ chart_payload.heart_rate_json|safe }});
 </script>
 {% endblock %}

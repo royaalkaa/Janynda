@@ -60,7 +60,7 @@
                             hx-target="#sos-result"
                             hx-swap="innerHTML"
                             hx-on::after-request="document.getElementById('sosMod') && bootstrap.Modal.getInstance(document.getElementById('sosMod')).hide()"
-                            {% csrf_token %}>
+                            >
                         <i class="bi bi-send-fill me-1"></i>{% trans "Отправить SOS" %}
                     </button>
                 </div>

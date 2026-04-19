@@ -61,5 +61,34 @@ window.JanyndaCharts = {
         }
       }
     });
+  },
+
+  renderHeartRateChart(canvasId, points) {
+    const el = document.getElementById(canvasId);
+    if (!el || typeof Chart === "undefined" || !points.length) return;
+
+    new Chart(el, {
+      type: "line",
+      data: {
+        labels: points.map((point) => point.date),
+        datasets: [{
+          label: "РџСѓР»СЊСЃ",
+          data: points.map((point) => point.bpm),
+          borderColor: "#EAB308",
+          backgroundColor: "rgba(234, 179, 8, 0.14)",
+          tension: 0.35,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: false, grid: { color: "#E5E7EB" } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
   }
 };

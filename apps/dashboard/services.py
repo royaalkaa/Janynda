@@ -1,6 +1,6 @@
 import json
 from collections import defaultdict
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 
 from django.utils import timezone
 
@@ -13,11 +13,29 @@ from apps.health.models import MetricRecord, MetricType
 SEVERITY_ORDER = {"critical": 3, "warning": 2, "normal": 1, "no-data": 0}
 
 
+def _build_synthetic_heart_rate_record(record):
+    pulse = record.value_json.get("pulse")
+    if pulse is None:
+        return None
+
+    return MetricRecord(
+        subject=record.subject,
+        metric_type=MetricType.HEART_RATE,
+        value_json={"bpm": pulse},
+        source=record.source,
+        recorded_at=record.recorded_at,
+    )
+
+
 def get_latest_metrics_for_subject(subject):
     latest = {}
     for record in MetricRecord.objects.filter(subject=subject).order_by("-recorded_at"):
         if record.metric_type not in latest:
             latest[record.metric_type] = record
+        if MetricType.HEART_RATE not in latest and record.metric_type == MetricType.BLOOD_PRESSURE:
+            heart_rate_record = _build_synthetic_heart_rate_record(record)
+            if heart_rate_record is not None:
+                latest[MetricType.HEART_RATE] = heart_rate_record
     return latest
 
 
@@ -93,10 +111,16 @@ def get_latest_comment_for_subject(subject):
 def get_subject_chart_payload(subject, days=7):
     today = timezone.localdate()
     start_date = today - timedelta(days=days - 1)
-    records = MetricRecord.objects.filter(subject=subject, recorded_at__date__gte=start_date)
+    start_at = timezone.make_aware(
+        datetime.combine(start_date, time.min),
+        timezone.get_current_timezone(),
+    )
+    records = MetricRecord.objects.filter(subject=subject, recorded_at__gte=start_at).order_by("recorded_at")
 
     steps_map = defaultdict(int)
     bp_points = []
+    heart_rate_points = []
+    seen_heart_rate_points = set()
     for record in records:
         day = timezone.localtime(record.recorded_at).date()
         if record.metric_type == MetricType.STEPS:
@@ -109,6 +133,27 @@ def get_subject_chart_payload(subject, days=7):
                     "diastolic": record.value_json.get("diastolic"),
                 }
             )
+            pulse = record.value_json.get("pulse")
+            heart_rate_key = (record.recorded_at.isoformat(), pulse)
+            if pulse is not None and heart_rate_key not in seen_heart_rate_points:
+                heart_rate_points.append(
+                    {
+                        "date": day.strftime("%d.%m"),
+                        "bpm": pulse,
+                    }
+                )
+                seen_heart_rate_points.add(heart_rate_key)
+        if record.metric_type == MetricType.HEART_RATE:
+            bpm = record.value_json.get("bpm")
+            heart_rate_key = (record.recorded_at.isoformat(), bpm)
+            if bpm is not None and heart_rate_key not in seen_heart_rate_points:
+                heart_rate_points.append(
+                    {
+                        "date": day.strftime("%d.%m"),
+                        "bpm": bpm,
+                    }
+                )
+                seen_heart_rate_points.add(heart_rate_key)
 
     labels = []
     steps_data = []
@@ -121,6 +166,7 @@ def get_subject_chart_payload(subject, days=7):
         "labels_json": json.dumps(labels, ensure_ascii=False),
         "steps_json": json.dumps(steps_data),
         "bp_json": json.dumps(bp_points[-7:], ensure_ascii=False),
+        "heart_rate_json": json.dumps(heart_rate_points[-7:], ensure_ascii=False),
     }
 
 

@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 
@@ -30,17 +31,32 @@ def quick_entry_view(request, metric_type):
 
     if request.method == "POST" and form.is_valid():
         payload = build_payload(metric_type, form.cleaned_data)
-        record = MetricRecord.objects.create(
-            subject=subject,
-            metric_type=metric_type,
-            value_json=payload,
-            source=MetricRecord.Source.MAGIC_LINK if request.path.startswith("/entry/") else MetricRecord.Source.MANUAL,
-        )
-        return render(
+        source = MetricRecord.Source.MAGIC_LINK if request.path.startswith("/entry/") else MetricRecord.Source.MANUAL
+        with transaction.atomic():
+            record = MetricRecord.objects.create(
+                subject=subject,
+                metric_type=metric_type,
+                value_json=payload,
+                source=source,
+            )
+            pulse = payload.get("pulse") if metric_type == MetricType.BLOOD_PRESSURE else None
+            if pulse is not None:
+                MetricRecord.objects.create(
+                    subject=subject,
+                    metric_type=MetricType.HEART_RATE,
+                    value_json={"bpm": pulse},
+                    source=source,
+                    recorded_at=record.recorded_at,
+                )
+
+        response = render(
             request,
             "health/partials/quick_entry_result.html",
             {"record": record, "subject": subject},
         )
+        if getattr(request, "htmx", False):
+            response["HX-Refresh"] = "true"
+        return response
 
     return render(
         request,
