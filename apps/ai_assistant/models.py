@@ -76,7 +76,11 @@ class AIMessage(models.Model):
         ASSISTANT = "assistant", "Ассистент"
         SYSTEM = "system", "Система"
 
-    conversation = models.ForeignKey(AIConversation, on_delete=models.CASCADE, related_name="messages")
+    conversation = models.ForeignKey(
+        AIConversation,
+        on_delete=models.CASCADE,
+        related_name="messages",
+    )
     role = models.CharField(max_length=10, choices=Role.choices)
     content = models.TextField()
     tokens = models.PositiveIntegerField(default=0)
@@ -93,15 +97,15 @@ class AIMessage(models.Model):
 
 class VoiceCommandLog(models.Model):
     class ActionType(models.TextChoices):
-        ANSWER = "answer", "РћС‚РІРµС‚"
-        PLAN_QUERY = "plan_query", "Р—Р°РїСЂРѕСЃ РїР»Р°РЅР°"
-        PLAN_COMPLETE = "plan_complete", "РћС‚РјРµС‚РєР° РїР»Р°РЅР°"
-        MEDICATION_LOG = "medication_log", "Р›РµРєР°СЂСЃС‚РІРѕ"
-        DOCTOR_LOG = "doctor_log", "Р’РёР·РёС‚ Рє РІСЂР°С‡Сѓ"
-        METRIC_LOG = "metric_log", "Р›РѕРі РјРµС‚СЂРёРєРё"
-        REMINDER = "reminder", "РќР°РїРѕРјРёРЅР°РЅРёРµ"
-        CANCELLED = "cancelled", "РћС‚РјРµРЅРµРЅРѕ"
-        UNSUPPORTED = "unsupported", "РќРµ СЂР°СЃРїРѕР·РЅР°РЅРѕ"
+        ANSWER = "answer", "Ответ"
+        PLAN_QUERY = "plan_query", "Запрос плана"
+        PLAN_COMPLETE = "plan_complete", "Отметка плана"
+        MEDICATION_LOG = "medication_log", "Лекарство"
+        DOCTOR_LOG = "doctor_log", "Визит к врачу"
+        METRIC_LOG = "metric_log", "Лог метрики"
+        REMINDER = "reminder", "Напоминание"
+        CANCELLED = "cancelled", "Отменено"
+        UNSUPPORTED = "unsupported", "Не распознано"
 
     user = models.ForeignKey(
         "accounts.User",
@@ -128,8 +132,8 @@ class VoiceCommandLog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
-        verbose_name = "Р“РѕР»РѕСЃРѕРІР°СЏ РєРѕРјР°РЅРґР°"
-        verbose_name_plural = "Р“РѕР»РѕСЃРѕРІС‹Рµ РєРѕРјР°РЅРґС‹"
+        verbose_name = "Голосовая команда"
+        verbose_name_plural = "Голосовые команды"
         ordering = ["-created_at"]
 
     def __str__(self):
