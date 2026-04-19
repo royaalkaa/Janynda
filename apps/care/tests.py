@@ -145,9 +145,24 @@ class CarePlanFlowTests(TestCase):
         TaskReminder.objects.create(task=task, remind_before_minutes=10)
 
         sent_count = send_task_reminders()
+        reminder = TaskReminder.objects.get(task=task, remind_before_minutes=10)
 
         self.assertGreaterEqual(sent_count, 1)
-        self.assertTrue(Notification.objects.filter(related_subject=self.subject, title__icontains="Напоминание").exists())
+        self.assertTrue(reminder.sent)
+        self.assertTrue(
+            Notification.objects.filter(
+                recipient=self.subject,
+                related_subject=self.subject,
+                title__icontains="Напоминание",
+            ).exists()
+        )
+        self.assertTrue(
+            Notification.objects.filter(
+                recipient=self.observer,
+                related_subject=self.subject,
+                title__icontains="Напоминание",
+            ).exists()
+        )
 
 
 class LocationFlowTests(TestCase):
