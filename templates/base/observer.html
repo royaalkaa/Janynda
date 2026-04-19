@@ -42,6 +42,9 @@
                 <i class="bi bi-trophy"></i> {% trans "Челленджи" %}
             </a>
             <div class="j-nav-section">{% trans "Сервисы" %}</div>
+            <a href="{% url 'care-plan' %}" class="j-nav-link {% if request.resolver_match.url_name == 'care-plan' or request.resolver_match.url_name == 'care-plan-subject' %}active{% endif %}">
+                <i class="bi bi-alarm"></i> {% trans "Напоминания" %}
+            </a>
             <a href="{% url 'notifications-list' %}" class="j-nav-link {% if request.path == '/notifications/' %}active{% endif %}">
                 <i class="bi bi-bell"></i> {% trans "Уведомления" %}
                 {% if unread_notifications_count %}

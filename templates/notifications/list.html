@@ -1,4 +1,4 @@
-{% extends "base/observer.html" %}
+{% extends base_template %}
 {% load i18n %}
 
 {% block title %}{% trans "Уведомления" %} · Janynda{% endblock %}
@@ -40,7 +40,9 @@
     {% empty %}
         {% trans "Уведомлений пока нет" as t_empty_title %}
         {% trans "Как только появятся алерты или напоминания, они будут собираться здесь." as t_empty_text %}
-        {% include "components/empty_state.html" with icon="bell" title=t_empty_title text=t_empty_text %}
+        {% trans "Открыть напоминания" as t_reminders_action %}
+        {% url 'care-plan' as reminders_url %}
+        {% include "components/empty_state.html" with icon="bell" title=t_empty_title text=t_empty_text action_url=reminders_url action_label=t_reminders_action %}
     {% endfor %}
 </div>
 {% endblock %}

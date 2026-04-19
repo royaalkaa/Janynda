@@ -14,7 +14,19 @@ from .models import Notification
 @login_required
 def notification_list_view(request):
     notifications = Notification.objects.filter(recipient=request.user).order_by("-created_at")
-    return render(request, "notifications/list.html", {"notifications": notifications[:50]})
+    base_template = (
+        "base/subject.html"
+        if request.user.is_subject and not request.user.is_observer
+        else "base/observer.html"
+    )
+    return render(
+        request,
+        "notifications/list.html",
+        {
+            "notifications": notifications[:50],
+            "base_template": base_template,
+        },
+    )
 
 
 @login_required

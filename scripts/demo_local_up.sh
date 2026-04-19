@@ -57,39 +57,15 @@ APP_URL_HOST="${APP_URL_HOST:-127.0.0.1}"
 
 export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:-config.settings.dev}"
 export DATABASE_URL="${DATABASE_URL:-sqlite:///$ROOT_DIR/db.sqlite3}"
-export REDIS_URL="${REDIS_URL:-redis://127.0.0.1:6379/0}"
-
-if command -v redis-cli >/dev/null 2>&1; then
-  if ! redis-cli -u "$REDIS_URL" ping >/dev/null 2>&1; then
-    if ! command -v redis-server >/dev/null 2>&1; then
-      echo "Redis is not reachable at $REDIS_URL and redis-server is not installed."
-      exit 1
-    fi
-    echo "Starting local Redis..."
-    redis-server --daemonize yes >/dev/null 2>&1
-    sleep 1
-  fi
-fi
+export USE_REDIS="${USE_REDIS:-False}"
+export CELERY_TASK_ALWAYS_EAGER="${CELERY_TASK_ALWAYS_EAGER:-True}"
+export JANYNDA_INPROCESS_SCHEDULER_ENABLED="${JANYNDA_INPROCESS_SCHEDULER_ENABLED:-True}"
 
 echo "Applying migrations..."
 "$PYTHON_BIN" manage.py migrate
 
 echo "Loading demo data..."
 "$PYTHON_BIN" manage.py seed_demo_data --reset
-
-echo "Starting Celery worker..."
-"$PYTHON_BIN" -m celery -A config.celery worker -l info >/tmp/janynda-celery.log 2>&1 &
-CELERY_PID=$!
-
-echo "Starting Celery Beat..."
-"$PYTHON_BIN" -m celery -A config.celery beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler >/tmp/janynda-celery-beat.log 2>&1 &
-BEAT_PID=$!
-
-cleanup() {
-  kill "$CELERY_PID" "$BEAT_PID" >/dev/null 2>&1 || true
-}
-
-trap cleanup EXIT INT TERM
 
 echo ""
 echo "Demo accounts:"
@@ -102,9 +78,7 @@ echo ""
 echo "Server: http://$APP_URL_HOST:$APP_PORT"
 echo "Admin:  http://$APP_URL_HOST:$APP_PORT/admin/"
 echo ""
-echo "Celery logs:"
-echo "  /tmp/janynda-celery.log"
-echo "  /tmp/janynda-celery-beat.log"
+echo "Reminders and notifications run inside Django runserver."
 echo ""
 
 exec "$PYTHON_BIN" manage.py runserver "$APP_HOST:$APP_PORT"

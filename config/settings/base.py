@@ -112,33 +112,55 @@ LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
 
 # ---------------------------------------------------------------------------
-# Cache (Redis)
+# Cache
 # ---------------------------------------------------------------------------
-REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
+USE_REDIS = env.bool("USE_REDIS", default=False)
+REDIS_URL = env("REDIS_URL", default="")
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": REDIS_URL,
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
-        "KEY_PREFIX": "janynda",
+if USE_REDIS and REDIS_URL:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": REDIS_URL,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
+            "KEY_PREFIX": "janynda",
+        }
     }
-}
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "janynda-local-cache",
+        }
+    }
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 # ---------------------------------------------------------------------------
 # Celery
 # ---------------------------------------------------------------------------
-CELERY_BROKER_URL = REDIS_URL
-CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_BROKER_URL = env(
+    "CELERY_BROKER_URL",
+    default=REDIS_URL if USE_REDIS and REDIS_URL else "memory://",
+)
+CELERY_RESULT_BACKEND = env(
+    "CELERY_RESULT_BACKEND",
+    default=REDIS_URL if USE_REDIS and REDIS_URL else "cache+memory://",
+)
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "Asia/Almaty"
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=not (USE_REDIS and REDIS_URL))
+CELERY_TASK_EAGER_PROPAGATES = env.bool("CELERY_TASK_EAGER_PROPAGATES", default=True)
+JANYNDA_INPROCESS_SCHEDULER_ENABLED = env.bool("JANYNDA_INPROCESS_SCHEDULER_ENABLED", default=True)
+JANYNDA_INPROCESS_SCHEDULER_INTERVAL_SECONDS = env.int(
+    "JANYNDA_INPROCESS_SCHEDULER_INTERVAL_SECONDS",
+    default=30,
+)
 
 # ---------------------------------------------------------------------------
 # Email

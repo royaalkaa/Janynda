@@ -19,7 +19,6 @@ def setup_periodic_tasks(apps, schema_editor):
 
     every_minute, _ = IntervalSchedule.objects.get_or_create(every=1, period="minutes")
     every_five_minutes, _ = IntervalSchedule.objects.get_or_create(every=5, period="minutes")
-    every_ten_minutes, _ = IntervalSchedule.objects.get_or_create(every=10, period="minutes")
     every_thirty_minutes, _ = IntervalSchedule.objects.get_or_create(every=30, period="minutes")
     daily_after_midnight, _ = CrontabSchedule.objects.get_or_create(
         minute="5",
@@ -53,7 +52,7 @@ def setup_periodic_tasks(apps, schema_editor):
         name="janynda.send_entry_reminders",
         defaults={
             "task": "apps.notifications.tasks.send_entry_reminders",
-            "interval": every_ten_minutes,
+            "interval": every_minute,
             "crontab": None,
             "enabled": True,
         },

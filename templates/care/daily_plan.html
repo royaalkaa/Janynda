@@ -1,13 +1,13 @@
 {% extends base_template %}
 
-{% block title %}План дня · Janynda{% endblock %}
-{% block topbar_title %}План дня{% endblock %}
-{% block topbar_subtitle %}Задачи, лекарства и визиты, которые важно не забыть{% endblock %}
+{% block title %}Напоминания · Janynda{% endblock %}
+{% block topbar_title %}Напоминания{% endblock %}
+{% block topbar_subtitle %}План дня, лекарства, визиты и уведомления по времени{% endblock %}
 
 {% block content %}
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
-        <h1 class="h3 mb-1">План для {{ subject.get_display_name }}</h1>
+        <h1 class="h3 mb-1">Напоминания для {{ subject.get_display_name }}</h1>
         <div class="text-muted">Дата: {{ target_date|date:"d.m.Y" }}</div>
     </div>
     <div class="d-flex flex-wrap gap-2">

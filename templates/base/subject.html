@@ -36,6 +36,10 @@
             <i class="bi bi-graph-up"></i>
             <span>{% trans "История" %}</span>
         </a>
+        <a href="{% url 'care-plan' %}" class="{% if request.resolver_match.url_name == 'care-plan' or request.resolver_match.url_name == 'care-plan-subject' %}active{% endif %}">
+            <i class="bi bi-alarm"></i>
+            <span>{% trans "Напоминания" %}</span>
+        </a>
         <a href="{% url 'payment' %}" class="{% if request.path == '/payment/' %}active{% endif %}">
             <i class="bi bi-qr-code"></i>
             <span>{% trans "Оплата" %}</span>

@@ -115,6 +115,14 @@ class CarePlanFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, task.title)
 
+    def test_reminders_page_is_visible_from_observer_navigation(self):
+        response = self.client.get(reverse("care-plan"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Напоминания для")
+        self.assertContains(response, "Напомнить за, мин")
+        self.assertContains(response, reverse("care-plan"))
+
     def test_recurring_task_generation_creates_future_occurrences(self):
         template = DailyPlanItem.objects.create(
             subject=self.subject,
